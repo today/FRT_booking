@@ -15,7 +15,7 @@ function getBookingFilename( aDate ){
 
 // 读入指定日期的预约登记表
 function getBooking( aDate ){
-	var aJson = [];
+	var aJson = makeBlankBooking( aDate, 40 );
 	var strFilename = getBookingFilename(aDate) ;
 
 	if(fs.existsSync( strFilename) ){
@@ -25,8 +25,33 @@ function getBooking( aDate ){
 
 	    aJson = JSON.parse(strBookingList);
 	}
+	return aJson;
+} 
+
+// 生成空白的预约登记表
+function makeBlankBooking( aDate, num ){
+	var aJson = [];
+	
+	for( i=0; i<num; i++ ){
+		var obj = makeBlankLine(aDate);
+		obj.index = i+1;
+		aJson.push(obj);
+	}
 	
 	return aJson;
-
-	
 } 
+
+function makeBlankLine(aDate){
+	var obj = new Object();
+	
+	obj.treat_date = aDate;
+	obj.patient_id =  "000";
+    obj.case_id =  "000";
+    obj.mobile =  "";
+    obj.name =  "";
+    obj.comment =  "";
+	return obj;
+}
+
+
+
