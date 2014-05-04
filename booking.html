@@ -78,8 +78,10 @@
     
 
     var objDate = new Date(); 
+
     //$scope.fields.treat_date = objDate;
-    $scope.datas.selected_date = objDate;
+    // 日期加一天，预约一般都是预约明天的。
+    $scope.datas.selected_date = new Date(objDate.valueOf() + 1 * 24 * 3660 * 1000);
 
     
     $scope.loadBooking = function() {
