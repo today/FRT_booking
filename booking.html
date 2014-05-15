@@ -13,10 +13,12 @@
 <body ng-app="inputApp" ng-controller="Ctrl" >
   <h1 style="">
     福润堂 预约 
-    <button ng-click="saveToDB()" style="float:right;" >上传预约数据</button>
+    <button ng-click="saveToDB()" style="float:right;" ng-hide="datas.isUpload" >上传预约数据</button>
   </h1> 
   <div style="float:left;width:500px;">
-    选择日期：<input type="date"   ng-model="selected_date" required style="width:150px" ng-change="loadBooking()" />
+    <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。<br/><br/></span>
+    选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" />
+
     <br/><br/>
     <table  style="width:500px;" >
       <tr>
@@ -31,7 +33,7 @@
         <td>{{obj.name}}</td>
         <td>{{obj.mobile}}</td>
         <td>{{obj.comment}}</td>
-        <td><input type="button" ng-click="goEdit( $index )" id="btn_edit_$index" value=" 修改 ">  </td>
+        <td><input type="button" ng-click="goEdit( $index )" ng-hide="datas.isUpload" value=" 修改 ">  </td>
       </tr>
     </table>
     <br/>
@@ -109,15 +111,14 @@
 
       console.log( "$scope.datas.bookinglist = ###" + JSON.stringify($scope.datas.bookinglist) + "###" );
 
-        //document.getElementById('btn_edit_'+index).style = 'display:none' ;
-        //alert(index);
+        
       };
 
       $scope.addLine = function(linenum) {
         var startIndex = $scope.datas.bookinglist.length;
         
         for( i=0; i<linenum; i++ ){
-          var obj = makeBlankLine($scope.datas.selected_date);
+          var obj = makeBlankLine($scope.selected_date);
           obj.index = i+startIndex+1;
           $scope.datas.bookinglist.push(obj);
         }
@@ -129,24 +130,28 @@
         conn.connect();
 
         var objList = $scope.datas.bookinglist
-        
-
         for( i=0; i<objList.length; i++ ){
           var obj = objList[i];
+          console.log(obj.name);
 
-          var strSql =  "insert into t_booking ( booking_date, booking_index, name, "
+          if(!isblank(obj.name)){
+            var strSql =  "insert into t_booking ( booking_date, booking_index, name, "
                       + "patient_id, case_id, mobile, comment, treat_date) values "
                       + "('"+ obj.treat_date +"','"+ obj.index +"','"+ obj.name +"','"
                       + obj.patient_id +"','"+ obj.case_id +"','"+ obj.mobile +"','"
                       + obj.comment +"','"+ obj.treat_date +"')";
         
-          
-          conn.query(strSql, function(err, result) {
-              if (err) throw err;
-              console.log('The result.id is: ', result.insertId);
-          });
+            conn.query(strSql, function(err, result) {
+                if (err) throw err;
+                console.log('The result.id is: ', result.insertId);
+            });
+          }
         }
         conn.end();
+
+        $scope.datas.isUpload = true;
+        $scope.saveBooking();
+        $scope.loadBooking();
       };
 
 
