@@ -49,9 +49,9 @@ function makeBlankBooking( aDate, num ){
 function makeBlankLine(aDate){
 	var obj = new Object();
 	
-	obj.treat_date = aDate;
-	obj.patient_id =  "000";
-    obj.case_id =  "000";
+	obj.treat_date = getYMD( aDate );
+	obj.patient_id =  "0";
+    obj.case_id =  "0";
     obj.mobile =  "";
     obj.name =  "";
     obj.comment =  "";

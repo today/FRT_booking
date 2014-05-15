@@ -124,16 +124,20 @@
       };
 
       $scope.saveToDB = function() {
-        alert();
+        
         var conn = getConn();
-        var strSql = "insert into t_booking (name, ) values ('conan','fens.me') ";
 
+        var obj = $scope.datas.bookinglist[0];
+        var strSql =  "insert into t_booking ( booking_date, booking_index, name, "
+                    + "patient_id, case_id, mobile, comment, treat_date) values "
+                    + "('"+ obj.treat_date +"','"+ obj.index +"','"+ obj.name +"','"
+                    + obj.patient_id +"','"+ obj.case_id +"','"+ obj.mobile +"','"
+                    + obj.comment +"','"+ obj.treat_date +"')";
+        
         conn.connect();
-
-
-        conn.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
+        conn.query(strSql, function(err, result) {
             if (err) throw err;
-            console.log('The solution is: ', rows[0].solution);
+            console.log('The result.id is: ', result.insertId);
         });
         conn.end();
       };
