@@ -1,5 +1,21 @@
 fs = require('fs');
 
+function isblank(strA){
+	if(strA){
+		if( "string" === typeof(strA) ){
+			if( "" === strA.trim()){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return true;
+		}
+	}else{
+		return true;
+	}
+}
+
 function getYMD( aDate ){
 	var year = aDate.getFullYear();
 	var month = aDate.getMonth()+1;
