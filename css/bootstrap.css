@@ -1497,20 +1497,22 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
-
+/*
 .table {
   width: 100%;
   margin-bottom: 18px;
 }
+
 
 .table th,
 .table td {
   padding: 8px;
   line-height: 18px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: center;
   border-top: 1px solid #dddddd;
 }
+
 
 .table th {
   font-weight: bold;
@@ -1749,6 +1751,7 @@ table .span24 {
   width: 1884px;
   margin-left: 0;
 }
+*/
 
 [class^="icon-"],
 [class*=" icon-"] {

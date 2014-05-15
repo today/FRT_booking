@@ -30,12 +30,17 @@ function getBooking( aDate ){
 
 // 生成空白的预约登记表
 function makeBlankBooking( aDate, num ){
-	var aJson = [];
+	var aJson = {};
+
+	aJson.bookinglist = [];
+	aJson.siUpload = false;
+	aJson.uploadDate = "";
+	aJson.BookingDate = getYMD( aDate );
 	
 	for( i=0; i<num; i++ ){
 		var obj = makeBlankLine(aDate);
 		obj.index = i+1;
-		aJson.push(obj);
+		aJson.bookinglist.push(obj);
 	}
 	
 	return aJson;
@@ -54,4 +59,16 @@ function makeBlankLine(aDate){
 }
 
 
+/*  操作Mysql数据库   */
+function getConn(){
+	var mysql = require('mysql');
+	var conn = mysql.createConnection({
+	    host: 'localhost',
+	    user: 'root',
+	    password: '',
+	    database:'frt',
+	    port: 3306
+	});
+	return conn;
+}
 

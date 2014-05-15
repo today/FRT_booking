@@ -5,65 +5,67 @@
   <title>福润堂 预约</title>
   
   <link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet" href="css/bootstrap.css">
+  
   <script type="text/javascript" src="lib/angular.js"></script>
   <script type="text/javascript" src="lib/angular-route.js"></script>
   <script type="text/javascript" src="js/common.js"></script>
 </head>
-<body ng-app="inputApp" ng-controller="Ctrl">
-
-  <h1 style="">福润堂 预约</h1> 
-  <br>
-
+<body ng-app="inputApp" ng-controller="Ctrl" >
+  <h1 style="">
+    福润堂 预约 
+    <button ng-click="saveToDB()" style="float:right;" >上传预约数据</button>
+  </h1> 
   <div style="float:left;width:500px;">
-    <h2 style="">预约列表</h2>
-    选择日期：<input type="date"   ng-model="datas.selected_date" required style="width:150px" ng-change="loadBooking()" />
-    <table border="1" style="width:500px;">
+    选择日期：<input type="date"   ng-model="selected_date" required style="width:150px" ng-change="loadBooking()" />
+    <br/><br/>
+    <table  style="width:500px;" >
       <tr>
-        <th>编号</th>
-        <th>姓名</th>
+        <th style="width:45px;">编号</th>
+        <th style="width:100px;">姓名</th>
         <th style="width:100px;">联系电话</th>
         <th>备注</th>
-        <th></th>
+        <th style="width:45px;"></th>
       </tr>
       <tr ng-repeat="obj in datas.bookinglist track by obj.index">
         <td align="center">{{obj.index}}</td>
         <td>{{obj.name}}</td>
         <td>{{obj.mobile}}</td>
         <td>{{obj.comment}}</td>
-        <td><input type="button" ng-click="goEdit( $index )" id="btn_edit_$index" value="修改">  </td>
+        <td><input type="button" ng-click="goEdit( $index )" id="btn_edit_$index" value=" 修改 ">  </td>
       </tr>
     </table>
     <br/>
     <input type="button" ng-click="addLine(5)"  value=" 再加 5 行 ">
+    <br><br>
     
-    </div>
+    <br><br> 
+  </div>
 
-    <div class='to_top'  ng-show="edit_area" >
-      <h2 style="">编辑预约信息</h2>
-      预约日期：<input type="text"   ng-model="show_date"  readonly style="width:150px" />
-      <br/>
-      联系电话：<input type="tel" ng-model="fields.mobile" style="width:100px" required />
-      <br/>
-      姓名:     <input  type="text"   ng-model="fields.name" style="width:60px"  required/> &nbsp;&nbsp;&nbsp;
-      
-      <input  type="hidden"    ng-model="fields.patient_id"  style="width:80px" readonly /> 
-      <input  type="hidden"    ng-model="fields.case_id"  style="width:80px" readonly />
-      &nbsp;&nbsp;&nbsp;
-      <br/>
+  <div class='to_top'  ng-show="edit_area" >
+    <h2 style="">编辑预约信息</h2>
+    预约日期：<input type="text"   ng-model="show_date"  readonly style="width:150px" />
+    <br/>
+    联系电话：<input type="tel" ng-model="fields.mobile" style="width:100px" required />
+    <br/>
+    姓名:     <input  type="text"   ng-model="fields.name" style="width:60px"  required/> &nbsp;&nbsp;&nbsp;
 
-      
-      备注:     <textarea  ng-model="fields.comment"      style="width:181px"   ></textarea><br/>
-
-      <br>    
-      <input type="button" value=" 保存 "  ng-click="saveBooking()"  />
+    <input  type="hidden"    ng-model="fields.patient_id"  style="width:80px" readonly /> 
+    <input  type="hidden"    ng-model="fields.case_id"  style="width:80px" readonly />
+    &nbsp;&nbsp;&nbsp;
+    <br/>
 
 
-      <br><br>  <br><br>  <br><br>  <br><br>  <br><br>  
-      <input type="hidden" value=" 测试: 填充数据 " ng-click="testFill()"  />
-    </div>
+    备注:     <textarea  ng-model="fields.comment"      style="width:181px"   ></textarea><br/>
+
+    <br>    
+    <input type="button" value=" 保存 "  ng-click="saveBooking()"  />
+
+
+    <br><br>  <br><br>  <br><br>  <br><br>  <br><br>  
+    <input type="hidden" value=" 测试: 填充数据 " ng-click="testFill()"  />
+  </div>
   
-<script type="text/javascript">
+  <script type="text/javascript">
   
   var inputApp = angular.module('inputApp', []);
 
@@ -78,23 +80,21 @@
     
 
     var objDate = new Date(); 
-
     //$scope.fields.treat_date = objDate;
     // 日期加一天，预约一般都是预约明天的。
-    $scope.datas.selected_date = new Date(objDate.valueOf() + 1 * 24 * 3660 * 1000);
+    $scope.selected_date = new Date(objDate.valueOf() + 1 * 24 * 3660 * 1000);
 
-    
     $scope.loadBooking = function() {
-      $scope.datas.bookinglist = getBooking($scope.datas.selected_date);
+      $scope.datas = getBooking($scope.selected_date);
     };
-    
-    
+
+
     $scope.saveBooking = function() {
-      
-      var aStr = JSON.stringify($scope.datas.bookinglist);
+
+      var aStr = JSON.stringify($scope.datas);
       console.log( "$scope.datas = ###" + aStr + "###" );
       // Write a file:
-      fs.writeFileSync( getBookingFilename($scope.datas.selected_date), aStr);
+      fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
       confirm("保存成功");
 
       $scope.loadBooking();
@@ -103,17 +103,17 @@
     };
 
     $scope.goEdit = function( index ) {
-        $scope.fields = $scope.datas.bookinglist[index];
-        $scope.show_date = getYMD($scope.datas.selected_date);
-        $scope.edit_area = true;
-        
-        console.log( "$scope.datas.bookinglist = ###" + JSON.stringify($scope.datas.bookinglist) + "###" );
-        
+      $scope.fields = $scope.datas.bookinglist[index];
+      $scope.show_date = getYMD($scope.selected_date);
+      $scope.edit_area = true;
+
+      console.log( "$scope.datas.bookinglist = ###" + JSON.stringify($scope.datas.bookinglist) + "###" );
+
         //document.getElementById('btn_edit_'+index).style = 'display:none' ;
         //alert(index);
-    };
+      };
 
-    $scope.addLine = function(linenum) {
+      $scope.addLine = function(linenum) {
         var startIndex = $scope.datas.bookinglist.length;
         
         for( i=0; i<linenum; i++ ){
@@ -121,17 +121,32 @@
           obj.index = i+startIndex+1;
           $scope.datas.bookinglist.push(obj);
         }
-    };
+      };
 
-  
-    $scope.loadBooking();
+      $scope.saveToDB = function() {
+        alert();
+        var conn = getConn();
+        var strSql = "insert into t_booking (name, ) values ('conan','fens.me') ";
 
-    $scope.test002 = function() {
+        conn.connect();
+
+
+        conn.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
+            if (err) throw err;
+            console.log('The solution is: ', rows[0].solution);
+        });
+        conn.end();
+      };
+
+
+      $scope.loadBooking();
+
+      $scope.test002 = function() {
         //alert($scope.fields.treat_date);
         alert(  );
-    };
+      };
 
-    $scope.testFill = function() {
+      $scope.testFill = function() {
         $scope.fields.patient_id =  "00001";
         $scope.fields.case_id =  "00002";
         $scope.fields.mobile =  "13991300001";
@@ -139,12 +154,12 @@
         $scope.fields.comment =  "经常来下午来。";
 
       };
-  }
-  
+    }
 
-  </script>
-</body>
-</html>
+
+    </script>
+  </body>
+  </html>
 
 
 
