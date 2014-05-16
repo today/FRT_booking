@@ -49,7 +49,7 @@ function makeBlankBooking( aDate, num ){
 	var aJson = {};
 
 	aJson.bookinglist = [];
-	aJson.siUpload = false;
+	aJson.isUpload = false;
 	aJson.uploadDate = "";
 	aJson.BookingDate = getYMD( aDate );
 	
