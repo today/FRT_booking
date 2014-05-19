@@ -59,14 +59,13 @@
 
     备注:     <textarea  ng-model="fields.comment"      style="width:181px"   ></textarea><br/>
 
-    <br>    
-    <input type="button" value=" 保存 "  ng-click="saveBooking()"  />
-
+    <br>
 
     <br><br>  <br><br>  <br><br>  <br><br>  <br><br>  
-    <input type="hidden" value=" 测试: 填充数据 " ng-click="testFill()"  />
+    
   </div>
-  
+  <input type="button" value=" 测试:  " ng-click="test002()"  />
+
   <script type="text/javascript">
   
   var inputApp = angular.module('inputApp', []);
@@ -74,6 +73,8 @@
   function Ctrl($scope) {
     $scope.fields = {};
     $scope.datas = {};
+    $scope.datas.isUpload = false;
+
     $scope.edit_area = false;
     $scope.show_date = '';
 
@@ -94,7 +95,7 @@
     $scope.saveBooking = function() {
 
       var aStr = JSON.stringify($scope.datas);
-      console.log( "$scope.datas = ###" + aStr + "###" );
+      // console.log( "$scope.datas = ###" + aStr + "###" );
       // Write a file:
       fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
       confirm("保存成功");
@@ -109,9 +110,8 @@
       $scope.show_date = getYMD($scope.selected_date);
       $scope.edit_area = true;
 
-      console.log( "$scope.datas.bookinglist = ###" + JSON.stringify($scope.datas.bookinglist) + "###" );
+      // console.log( "$scope.datas.bookinglist = ###" + JSON.stringify($scope.datas.bookinglist) + "###" );
 
-        
       };
 
       $scope.addLine = function(linenum) {
@@ -128,38 +128,54 @@
         
         var conn = getConn();
         conn.connect();
-
-        var objList = $scope.datas.bookinglist
-        for( i=0; i<objList.length; i++ ){
-          var obj = objList[i];
-          console.log(obj.name);
-
-          if(!isblank(obj.name)){
-            var strSql =  "insert into t_booking ( booking_date, booking_index, name, "
-                      + "patient_id, case_id, mobile, comment, treat_date) values "
-                      + "('"+ obj.treat_date +"','"+ obj.index +"','"+ obj.name +"','"
-                      + obj.patient_id +"','"+ obj.case_id +"','"+ obj.mobile +"','"
-                      + obj.comment +"','"+ obj.treat_date +"')";
         
-            conn.query(strSql, function(err, result) {
-                if (err) throw err;
-                console.log('The result.id is: ', result.insertId);
-            });
-          }
-        }
-        conn.end();
+        var strBookingDate = getYMD($scope.selected_date);;
+        // 检查是否已经上传了这一天的数据，不允许重复上传。
+        var strSQL = "select count(booking_date) as haveNum from t_booking where booking_date='" + strBookingDate + "'";
+        conn.query(strSQL, function(err, result) {
+            if (err) throw err;
+            console.log('The result number is: ', result[0].haveNum);
+            if( result[0].haveNum == 0 ){
+                var objList = $scope.datas.bookinglist
+                for( i=0; i<objList.length; i++ ){
+                  var obj = objList[i];
+                  console.log(obj.name);
 
-        $scope.datas.isUpload = true;
-        $scope.saveBooking();
-        $scope.loadBooking();
+                  if(!isblank(obj.name)){
+                    var strSQL2 =  "insert into t_booking ( booking_date, booking_index, name, "
+                              + "patient_id, case_id, mobile, comment, treat_date) values "
+                              + "('"+ obj.treat_date +"','"+ obj.index +"','"+ obj.name +"','"
+                              + obj.patient_id +"','"+ obj.case_id +"','"+ obj.mobile +"','"
+                              + obj.comment +"','"+ obj.treat_date +"')";
+                
+                    conn.query(strSQL2, function(err, result) {
+                        if (err) throw err;
+                        console.log('The result.id is: ', result.insertId);
+                        $scope.datas.isUpload = true;
+                        alert("1111111" + $scope.datas.isUpload);
+                        
+                    });
+                  }
+                }
+                conn.end();
+
+                alert("2222222" + $scope.datas.isUpload);
+                
+            }else{
+                alert("预约信息已经在数据库中存在了，不可重复上传！");
+            }
+        });
+        //$scope.saveBooking();
+        //$scope.loadBooking();
+                
       };
 
 
       $scope.loadBooking();
 
       $scope.test002 = function() {
-        //alert($scope.fields.treat_date);
-        alert(  );
+        $scope.datas.isUpload = true;
+        //alert($scope.datas.isUpload);
       };
 
       $scope.testFill = function() {
