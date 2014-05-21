@@ -18,8 +18,9 @@
     <button ng-click="saveToDB()" style="float:right;" ng-Disabled="noDB" ng-hide="datas.isUpload" >上传预约数据</button>
   </h1> 
   <div style="float:left;width:500px;">
-    <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库。</span>
+    
     <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。</span>
+    <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库。</span>
     <span ng-show="noDB" style="float:right;color:blue;">没有连接数据库，当前运行于单机模式。</span>
 
     <span style="float:left;">选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" /></span>
@@ -189,9 +190,11 @@
         conn.query('SELECT * from t_setting', function(err, rows, fields) {
           if (err) {
             $scope.noDB = true;
+            $scope.$apply();
             //console.log("XXXXXXXXXXXXXX" + $scope.noDB );
           }else{
             $scope.noDB = false;
+            $scope.$apply();
             //console.log("OOOOOOOOOOOOOO" + $scope.noDB );
           }
 
