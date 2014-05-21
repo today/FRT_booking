@@ -13,11 +13,16 @@
 <body ng-app="inputApp" ng-controller="Ctrl" >
   <h1 style="">
     福润堂 预约 
-    <button ng-click="saveToDB()" style="float:right;" ng-hide="datas.isUpload" >上传预约数据</button>
+    <button ng-click="ifNoDB()" style="float:right;" >连接数据库</button>
+    <button ng-click="getHistory()" style="float:right;" ng-Disabled="noDB" >获取病历</button>
+    <button ng-click="saveToDB()" style="float:right;" ng-Disabled="noDB" ng-hide="datas.isUpload" >上传预约数据</button>
   </h1> 
   <div style="float:left;width:500px;">
-    <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。<br/><br/></span>
-    选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" />
+    <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库。</span>
+    <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。</span>
+    <span ng-show="noDB" style="float:right;color:blue;">没有连接数据库，当前运行于单机模式。</span>
+
+    <span style="float:left;">选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" /></span>
 
     <br/><br/>
     <table  style="width:500px;" >
@@ -72,10 +77,12 @@
   
   var inputApp = angular.module('inputApp', []);
 
-  function Ctrl($scope) {
+  function Ctrl($scope, $timeout) {
     $scope.fields = {};
     $scope.datas = {};
     $scope.datas.isUpload = false;
+    $scope.noDB = true;
+    
 
     $scope.edit_area = false;
     $scope.show_date = '';
@@ -174,11 +181,31 @@
                 
       };
 
+      /*  测试数据库是否可访问   */
+      $scope.ifNoDB = function (){
+        var conn = getConn();
+        conn.connect();
+
+        conn.query('SELECT * from t_setting', function(err, rows, fields) {
+          if (err) {
+            $scope.noDB = true;
+            //console.log("XXXXXXXXXXXXXX" + $scope.noDB );
+          }else{
+            $scope.noDB = false;
+            //console.log("OOOOOOOOOOOOOO" + $scope.noDB );
+          }
+
+        });
+        conn.end();
+      };
+
       $scope.loadBooking();
+      $scope.ifNoDB();
 
       $scope.test002 = function() {
         //$scope.datas.isUpload = true;
-        alert($scope.datas.isUpload);
+        //alert($scope.datas.isUpload);
+        
       };
 
       $scope.testFill = function() {

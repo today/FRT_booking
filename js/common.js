@@ -1,4 +1,5 @@
-fs = require('fs');
+var fs = require('fs');
+var mysql = require('mysql');
 
 function isblank(strA){
 	if(strA){
@@ -77,7 +78,7 @@ function makeBlankLine(aDate){
 
 /*  操作Mysql数据库   */
 function getConn(){
-	var mysql = require('mysql');
+	
 	var conn = mysql.createConnection({
 	    host: 'localhost',
 	    user: 'root',
@@ -87,4 +88,12 @@ function getConn(){
 	});
 	return conn;
 }
+
+
+
+
+
+
+
+
 
