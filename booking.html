@@ -20,9 +20,8 @@
   <div style="float:left;width:500px;">
     
     <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。</span>
-    <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库。</span>
-    <span ng-show="noDB" style="float:right;color:blue;">没有连接数据库，当前运行于单机模式。</span>
-
+    <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库，可以上传数据了。</span>
+    
     <span style="float:left;">选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" /></span>
 
     <br/><br/>
@@ -203,8 +202,7 @@
       };
 
       $scope.loadBooking();
-      $scope.ifNoDB();
-
+      
       $scope.test002 = function() {
         //$scope.datas.isUpload = true;
         //alert($scope.datas.isUpload);
