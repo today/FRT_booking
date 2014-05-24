@@ -8,7 +8,7 @@
   
   <script type="text/javascript" src="lib/angular.js"></script>
   <script type="text/javascript" src="lib/angular-route.js"></script>
-  <script type="text/javascript" src="js/common.js"></script>
+  <script type="text/javascript" src="js/FRT_booking.js"></script>
 </head>
 <body ng-app="inputApp" ng-controller="Ctrl" >
   <h1 style="">
@@ -22,12 +22,17 @@
     <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。</span>
     <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库，可以上传数据了。</span>
     
-    <span style="float:left;">选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" /></span>
+    <span style="float:left;">
+      选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" />
+      <button   ng-click="make_no()" > 生成门诊号和病历号 </button>
+    </span>
 
     <br/><br/>
     <table  style="width:500px;" >
       <tr>
-        <th style="width:45px;">编号</th>
+        <th style="width:45px;">预约编号</th>
+        <th>病历号</th>
+        <th>门诊号</th>
         <th style="width:100px;">姓名</th>
         <th style="width:100px;">联系电话</th>
         <th>备注</th>
@@ -35,6 +40,8 @@
       </tr>
       <tr ng-repeat="obj in datas.bookinglist track by obj.index">
         <td align="center">{{obj.index}}</td>
+        <td>{{obj.patient_no}}</td>
+        <td>{{obj.case_no}}</td>
         <td>{{obj.name}}</td>
         <td>{{obj.mobile}}</td>
         <td>{{obj.comment}}</td>
@@ -203,6 +210,13 @@
 
       $scope.loadBooking();
       
+      // 生成病历号和门诊号。
+      $scope.make_no = function() {
+        //循环
+        //
+        
+      };
+
       $scope.test002 = function() {
         //$scope.datas.isUpload = true;
         //alert($scope.datas.isUpload);
