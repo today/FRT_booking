@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/app.css">
   
   <script type="text/javascript" src="lib/angular.js"></script>
+  <script type="text/javascript" src="node_modules/underscore/underscore.js"></script>
  
   
 </head>
@@ -15,8 +16,18 @@
     福润堂 存储过程测试 
     <button ng-click="getProcedure()" > 调用存储过程 </button>
     </h1>
-
     {{result}}
+
+    <h1 style="">
+    福润堂 对象查询性能测试  
+    <br/><input ng-model="obj_count" >个对象 
+    <br/><button ng-click="testStep1()" > 1. 生成对象 </button>
+    <br/><button ng-click="testStep2()" > 2. 写入Json文件 </button>
+    <br/><button ng-click="testStep3()" > 3. 读Json文件</button>
+    <br/><button ng-click="testStep4()" > 4. Search</button>
+    <br/><button ng-click="testStep5()" > 5. 没有了</button>
+    <br/><span ng-repeat="obj in bigObjs" > #{{obj.patient_no}}# </span>
+    </h1>
 
 <script type="text/javascript">
 
@@ -24,7 +35,6 @@ var pApp = angular.module('pApp', []);
 
 function Ctrl($scope ) {
   $scope.result = "abcd";
-
 
   $scope.getProcedure = function() {
     var mysql = require('mysql');
@@ -36,8 +46,6 @@ function Ctrl($scope ) {
                                         database:'frt',
                                         port: 3306,
                                         multipleStatements: true});
-
-    
     conn.connect();
     conn.query("call get_history_recipe('13991312345')", function(err, results) {
       if (err) {
@@ -46,14 +54,50 @@ function Ctrl($scope ) {
       }
       // `results` is an array with one element for every statement in the query:
       console.log(results[0]); // [{1: 1}]
-      
     });
-  
-    conn.end();
+    conn.end();        
+  };
 
-         
-  }
+  // 性能测试部分
+  $scope.obj_count = 10000;
+  $scope.bigObjs = [];
 
+  $scope.testStep1 = function() {
+    for( i=0;i<$scope.obj_count; i++){
+      var tempObj = makeBlankLine();
+      tempObj.mobile = "13991907195_" + i;
+      tempObj.name = "name_" + i;
+      $scope.bigObjs.push(tempObj);
+    }
+    alert("finished!");
+
+  };
+
+  $scope.testStep2 = function() {
+    var fs = require('fs');
+    var aStr = JSON.stringify($scope.bigObjs);
+    // Write a file:
+    fs.writeFileSync( "data/test_bigObjs.json", aStr);
+    confirm("保存成功" );
+  };
+
+  $scope.testStep3 = function() {
+    var tempObj = _.findWhere($scope.bigObjs, {mobile: "13991907195_000"} );
+    tempObj.patient_no = "abc";
+    console.log( tempObj ); 
+  };
+}
+
+
+
+function makeBlankLine(){ 
+    var obj = new Object();
+    obj.patient_no =  "0";
+    obj.case_no =  "0";
+    obj.mobile =  "";
+    obj.name =  "";
+    obj.comment =  "";
+  return obj;
 }
 
 
