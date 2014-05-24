@@ -39,14 +39,14 @@ function Ctrl($scope ) {
 
     
     conn.connect();
-    conn.query("call get_history_recipe('')", function(err, results) {
+    conn.query("call get_history_recipe('13991312345')", function(err, results) {
       if (err) {
         console.log("Error: " + err);
         throw err;
       }
       // `results` is an array with one element for every statement in the query:
       console.log(results[0]); // [{1: 1}]
-      console.log(results[1]); // [{2: 2}]
+      
     });
   
     conn.end();
