@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="css/app.css">
   
   <script type="text/javascript" src="lib/angular.js"></script>
-  <script type="text/javascript" src="lib/angular-route.js"></script>
+  <script type="text/javascript" src="node_modules/underscore/underscore.js"></script>
+ 
   <script type="text/javascript" src="js/FRT_booking.js"></script>
 </head>
 <body ng-app="inputApp" ng-controller="Ctrl" >
@@ -59,12 +60,12 @@
     <h2 style="">编辑预约信息</h2>
     预约日期：<input type="text"   ng-model="show_date"  readonly style="width:150px" />
     <br/>
-    联系电话：<input type="tel" ng-model="fields.mobile" style="width:100px" required />
+    联系电话：<input type="tel" ng-model="fields.mobile" style="width:100px" ng-change="findInfo()" required />
     <br/>
     姓名:     <input  type="text"   ng-model="fields.name" style="width:60px"  required/> &nbsp;&nbsp;&nbsp;
 
-    <input  type="hidden"    ng-model="fields.patient_id"  style="width:80px" readonly /> 
-    <input  type="hidden"    ng-model="fields.case_id"  style="width:80px" readonly />
+    <input  type="hidden"    ng-model="fields.patient_no"  style="width:80px" readonly /> 
+    <input  type="hidden"    ng-model="fields.case_no"  style="width:80px" readonly />
     &nbsp;&nbsp;&nbsp;
     <br/>
 
@@ -214,6 +215,34 @@
       $scope.make_no = function() {
         //循环
         //
+        
+      };
+
+      // 根据电话号码，找出患者信息。
+      $scope.findInfo = function() {
+
+        var database = {};
+        var strFilename = "data/database.json"
+        if(fs.existsSync( strFilename) ){
+          var strBookingList = fs.readFileSync(strFilename);
+          database = JSON.parse(strBookingList);
+          //console.log(database);
+          var findObj = {};
+          findObj.mobile = $scope.fields.mobile;
+          var tempObj = _.findWhere(database.patient_list, findObj );
+          
+
+          if(tempObj){
+            $scope.fields.name = tempObj.patient_name;
+            $scope.fields.patient_no = tempObj.patient_no;
+            $scope.fields.comment = tempObj.comment;
+          }else{
+            // todo  新患者提示
+          }
+          
+        }else{
+          // todo  出错提示，患者信息不存在。
+        }
         
       };
 
