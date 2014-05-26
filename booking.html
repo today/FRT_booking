@@ -36,7 +36,7 @@
         <th style="width:100px;">门诊号</th>
         <th style="width:60px;">姓名</th>
         <th style="width:100px;">联系电话</th>
-        <th style="width:150px;">备注</th>
+        <th style="width:150px;">预约备注</th>
         <th style="width:40px;"></th>
       </tr>
       <tr ng-repeat="obj in datas.bookinglist track by obj.index">
@@ -70,7 +70,7 @@
     <br/>
 
 
-    备注:     <textarea  ng-model="fields.comment"      style="width:181px"   ></textarea><br/>
+    预约备注:     <textarea  ng-model="fields.comment"      style="width:181px"   ></textarea><br/>
 
     <br>    
     <input type="button" value=" 保存 "  ng-click="saveBooking()"  />
