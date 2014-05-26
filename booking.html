@@ -25,19 +25,19 @@
     
     <span style="float:left;">
       选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" />
-      <button   ng-click="make_no()" > 生成门诊号和病历号 </button>
+      <button   ng-click="make_no()" > 生成病历号 </button>
     </span>
 
     <br/><br/>
-    <table  style="width:500px;" >
+    <table  style="width:600px;" >
       <tr>
         <th style="width:45px;">预约编号</th>
-        <th>病历号</th>
-        <th>门诊号</th>
-        <th style="width:100px;">姓名</th>
+        <th style="width:65px;">病历号</th>
+        <th style="width:100px;">门诊号</th>
+        <th style="width:60px;">姓名</th>
         <th style="width:100px;">联系电话</th>
-        <th>备注</th>
-        <th style="width:45px;"></th>
+        <th style="width:150px;">备注</th>
+        <th style="width:40px;"></th>
       </tr>
       <tr ng-repeat="obj in datas.bookinglist track by obj.index">
         <td align="center">{{obj.index}}</td>
@@ -137,6 +137,7 @@
         for( i=0; i<linenum; i++ ){
           var obj = makeBlankLine($scope.selected_date);
           obj.index = i+startIndex+1;
+          obj.case_no = getYMD( $scope.selected_date ) + "_" + (startIndex + i + 1);
           $scope.datas.bookinglist.push(obj);
         }
       };
@@ -161,9 +162,9 @@
                   if(!isblank(obj.name)){
                     
                     var strSQL2 =  "insert into t_booking ( booking_date, booking_index, name, "
-                              + "patient_id, case_id, mobile, comment, treat_date) values "
+                              + "patient_no, case_no, mobile, comment, treat_date) values "
                               + "('"+ obj.treat_date +"','"+ obj.index +"','"+ obj.name +"','"
-                              + obj.patient_id +"','"+ obj.case_id +"','"+ obj.mobile +"','"
+                              + obj.patient_no +"','"+ obj.case_no +"','"+ obj.mobile +"','"
                               + obj.comment +"','"+ obj.treat_date +"')";
                 
                     conn.query(strSQL2, function(err, result) {
@@ -241,7 +242,7 @@
           }
           
         }else{
-          // todo  出错提示，患者信息不存在。
+          // todo  出错提示，存放患者信息的json文件不存在。
         }
         
       };

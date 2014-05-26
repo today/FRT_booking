@@ -26,6 +26,15 @@ function getYMD( aDate ){
 
 }
 
+function getYMD_no_dash( aDate ){
+	var year = aDate.getFullYear();
+	var month = aDate.getMonth()+1;
+	var day = aDate.getDate();
+
+	return "" + year + month + day;
+
+}
+
 function getBookingFilename( aDate ){
 	return 'data/booking_' + getYMD(aDate) + '.json' ;
 }
@@ -53,10 +62,13 @@ function makeBlankBooking( aDate, num ){
 	aJson.isUpload = false;
 	aJson.uploadDate = "";
 	aJson.BookingDate = getYMD( aDate );
+
+	strYMD = getYMD(aDate);
 	
 	for( i=0; i<num; i++ ){
 		var obj = makeBlankLine(aDate);
 		obj.index = i+1;
+		obj.case_no = strYMD + "_" + (i+1);
 		aJson.bookinglist.push(obj);
 	}
 	
