@@ -25,7 +25,7 @@
     
     <span style="float:left;">
       选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" />
-      <button   ng-click="make_no()" > 生成病历号 </button>
+      <button ng-hide="true"  ng-click="make_no()" > 生成病历号 </button>
     </span>
 
     <br/><br/>
@@ -60,13 +60,13 @@
     <h2 style="">编辑预约信息</h2>
     预约日期：<input type="text"   ng-model="show_date"  readonly style="width:150px" />
     <br/>
-    联系电话：<input type="tel" ng-model="fields.mobile" style="width:100px" ng-change="findInfo()" required />
+    病历号:     <input  type="text"    ng-model="fields.patient_no"  style="width:80px" /> 
     <br/>
     姓名:     <input  type="text"   ng-model="fields.name" style="width:60px"  required/> &nbsp;&nbsp;&nbsp;
-
-    <input  type="hidden"    ng-model="fields.patient_no"  style="width:80px" readonly /> 
+    <br/>
+    联系电话：<input type="tel" ng-model="fields.mobile" style="width:100px" ng-change="findInfo()" required />
+    <br/>
     <input  type="hidden"    ng-model="fields.case_no"  style="width:80px" readonly />
-    &nbsp;&nbsp;&nbsp;
     <br/>
 
 
@@ -79,6 +79,7 @@
     <br><br>  <br><br>  <br><br>  <br><br>  <br><br>  
     
   </div>
+  <h1 id="auto_hide_msg" ng-show="flag_msg_show" >保存成功</h1>
   <input type="hidden" value=" 测试:  " ng-click="test002()"  />
 
   <script type="text/javascript">
@@ -90,6 +91,7 @@
     $scope.datas = {};
     $scope.datas.isUpload = false;
     $scope.noDB = true;
+    $scope.flag_msg_show = false;
     
 
     $scope.edit_area = false;
@@ -115,7 +117,13 @@
       // console.log( "$scope.datas = ###" + aStr + "###" );
       // Write a file:
       fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
-      confirm("保存成功" );
+      //confirm("保存成功" );
+      $scope.flag_msg_show = true;
+      setTimeout(function(){
+                              $scope.flag_msg_show = false;
+                              $scope.$apply();
+                            },1000);
+
 
       //$scope.loadBooking();
       $scope.fields = {};
@@ -171,16 +179,12 @@
                         if (err) throw err;
                         console.log('The result.id is: ', result.insertId);
                         
-                        //alert("1111111" + $scope.datas.isUpload);
-                        
                     });
                   }
                 }
                 $scope.saveBooking();
                 conn.end();
 
-                //alert("2222222" + $scope.datas.isUpload);
-                
             }else{
                 alert("预约信息已经在数据库中存在了，不可重复上传！");
             }
@@ -249,7 +253,6 @@
 
       $scope.test002 = function() {
         //$scope.datas.isUpload = true;
-        //alert($scope.datas.isUpload);
         
       };
 
