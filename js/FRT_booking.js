@@ -88,7 +88,7 @@ function makeBlankLine(aDate){
 }
 
 
-/*  操作Mysql数据库   */
+/*  连接Mysql数据库   */
 function getConn(){
 	
 	var conn = mysql.createConnection({
