@@ -190,8 +190,12 @@
                               + obj.comment +"','"+ obj.treat_date +"')";
                 
                     conn.query(strSQL2, function(err, result) {
-                        if (err) throw err;
-                        console.log('The result.id is: ', result.insertId);
+                        if (err) {
+                          console.log( err);
+                          //console.log('strSQL2 :', strSQL2);
+                          throw err;
+                        }
+                        console.log('The result.id is: ', result.insertId );
                         
                     });
                   }
