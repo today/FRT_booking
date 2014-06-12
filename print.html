@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>福润堂 预约票打印</title>
+</head>
+<body>
+  <center>
+  <h1>
+    福润堂
+    <br>
+    <span id="riqi"></span>
+    <br><br>
+    <span id="bianhao"></span>
+    <br><br>
+    <span id="xingming"></span>
+  </h1>
+    <input type="button" value=" 打印 "  onclick="goPrint()"  /> 
+    <input type="button" value=" 关闭 "  onclick="goClose()"  /> 
+
+  </center>
+  <script type="text/javascript">
+    var url_param = location.href.substring(location.href.indexOf("?")+1);
+    url_param = decodeURI(url_param);
+    var params = url_param.split(",");
+
+    setV("bianhao", params[0]);
+    setV("xingming", params[1]);
+    setV("riqi", params[2].substring(0,params[2].length-2));
+
+    function setV( id, val ){
+      document.getElementById(id).innerHTML = val;
+    }
+
+    var goPrint = function(){
+      window.print();
+    };
+
+    var goClose = function(){
+      window.close();
+    };
+  </script>
+</body>
+</html>
+

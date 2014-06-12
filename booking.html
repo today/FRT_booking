@@ -12,13 +12,18 @@
   <script type="text/javascript" src="js/FRT_booking.js"></script>
 </head>
 <body ng-app="inputApp" ng-controller="Ctrl" >
-  <h1 style="">
-    福润堂 预约 
+  <span id='debug_area' style='display:none;'> 开发人员专用区域，按  `  键(ESC键下面那个键)，就可隐藏。  
+    <input type="button" value=" 测试:  " onclick="test001()"  />
+    <input type="button" value=" 测试: 填充数据 " ng-click="test_fill()"  />
     <button ng-click="ifNoDB()" style="float:right;" >连接数据库</button>
     <button ng-click="getHistory()" style="float:right;" ng-Disabled="noDB" >获取病历</button>
     <button ng-click="saveToDB()" style="float:right;" ng-Disabled="noDB" ng-hide="datas.isUpload" >上传预约数据</button>
+  </span>
+  <h1 style="">
+    福润堂 预约 
+    
   </h1> 
-  <div style="float:left;width:500px;">
+  <div style="float:left;width:600px;">
     
     <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。</span>
     <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库，可以上传数据了。</span>
@@ -29,24 +34,28 @@
     </span>
 
     <br/><br/>
-    <table  style="width:600px;" >
+    <table  style="" >
       <tr>
         <th style="width:45px;">预约编号</th>
+        <th style="width:120px;">门诊号</th>
         <th style="width:65px;">病历号</th>
-        <th style="width:100px;">门诊号</th>
         <th style="width:60px;">姓名</th>
+        <th style="width:60px;"></th>
         <th style="width:100px;">联系电话</th>
         <th style="width:150px;">预约备注</th>
         <th style="width:40px;"></th>
+        
       </tr>
       <tr ng-repeat="obj in datas.bookinglist track by obj.index">
         <td align="center">{{obj.index}}</td>
-        <td>{{obj.patient_no}}</td>
         <td>{{obj.case_no}}</td>
+        <td>{{obj.patient_no}}</td>
         <td>{{obj.name}}</td>
+        <td><input type="button" ng-click="goPrint( obj )"  value=" 打印 ">  </td>
         <td>{{obj.mobile}}</td>
         <td>{{obj.comment}}</td>
         <td><input type="button" ng-click="goEdit( $index )" ng-hide="datas.isUpload" value=" 修改 ">  </td>
+        
       </tr>
     </table>
     <br/>
@@ -60,17 +69,17 @@
     <h2 style="">编辑预约信息</h2>
     预约日期：<input type="text"   ng-model="show_date"  readonly style="width:150px" />
     <br/>
-    病历号:     <input  type="text"  id="patient_no"  ng-model="fields.patient_no"  style="width:80px" /> 
+    病历号:     <input  type="text" id="id_1"  ng-model="fields.patient_no"  style="width:80px" /> 
     <br/>
-    姓名:     <input  type="text"   ng-model="fields.name" style="width:60px"  required/> &nbsp;&nbsp;&nbsp;
+    姓名:     <input  type="text" id="id_2"  ng-model="fields.name" style="width:60px"  required/> &nbsp;&nbsp;&nbsp;
     <br/>
-    联系电话：<input type="tel" ng-model="fields.mobile" style="width:100px" ng-change="findInfo()" required />
+    联系电话：<input type="tel" id="id_3" ng-model="fields.mobile" style="width:100px" ng-change="findInfo()" required />
     <br/>
-    <input  type="hidden"    ng-model="fields.case_no"  style="width:80px" readonly />
+    <input  type="hidden"   ng-model="fields.case_no"  style="width:80px" readonly />
     <br/>
 
 
-    预约备注:     <textarea  ng-model="fields.comment"      style="width:181px"   ></textarea><br/>
+    预约备注:     <textarea  ng-model="fields.comment"  id="id_4"     style="width:181px"   ></textarea><br/>
 
     <br>    
     <input type="button" value=" 保存 "  ng-click="saveBooking()"  /> 
@@ -137,13 +146,19 @@
       $scope.edit_area = false;
     }
 
+    $scope.goPrint = function(obj){
+      window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no 
+                , "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
+    }
+
     $scope.goEdit = function( index ) {
       $scope.fields = $scope.datas.bookinglist[index];
       $scope.show_date = getYMD($scope.selected_date);
       $scope.edit_area = true;
+      
       //alert(document.getElementById("patient_no"));
       setTimeout(function(){
-                              var inputObj = document.getElementById("patient_no");
+                              var inputObj = document.getElementById("id_1");
                               inputObj.focus();
                               inputObj.select();
                            },250);
@@ -284,6 +299,50 @@
       };
     }
 
+  debug_flag = 0;
+  document.onkeydown = function(event) { 
+    keynum = event.which;
+
+    // 这一段是用来显示隐藏debug区的。
+    if (keynum==192){
+      
+      if( debug_flag == 0 ){
+        debug_flag++;
+      }else if(debug_flag == 1 ){
+        debug_flag++;
+        document.getElementById('debug_area').style.display="";//显示
+        
+      }
+      else if(debug_flag == 2 ){
+        debug_flag = 0;
+        document.getElementById('debug_area').style.display="none";//隐藏
+      }
+        
+    }
+
+    //alert(keynum);
+    if (keynum==13){
+        
+        var temp_id = event.srcElement.id;
+        if( temp_id ){
+          var str_id = temp_id.substring(3); 
+          //console.log("id:" , str_id );
+          var i_id = new Number(str_id);
+          var obj = document.getElementById('id_' + (i_id + 1) );
+          if( obj ){
+            obj.focus();
+          }
+          else{
+            obj = document.getElementById( 'id_1' );
+            obj.focus();
+          }
+        }
+        else{
+          console.log("not input." );
+        }
+        
+    }
+  };
 
     </script>
   </body>
