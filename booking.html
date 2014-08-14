@@ -51,7 +51,7 @@
         <td>{{obj.case_no}}</td>
         <td>{{obj.patient_no}}</td>
         <td>{{obj.name}}</td>
-        <td><input type="button" ng-click="goPrint( obj )"  value=" 打印 ">  </td>
+        <td><input type="button" id="prt_{{obj.index}}" ng-click="goPrint( obj )"  value=" 打印 ">  </td>
         <td>{{obj.mobile}}</td>
         <td>{{obj.comment}}</td>
         <td><input type="button" ng-click="goEdit( $index )" ng-hide="datas.isUpload" value=" 修改 ">  </td>
@@ -147,6 +147,13 @@
     }
 
     $scope.goPrint = function(obj){
+      //alert(obj.index);
+      //var objBtn = document.getElementById("prt_" + obj.index);
+      //objBtn.style.color = "red";
+      obj.comment = "已经打印  " + obj.comment;
+      var aStr = JSON.stringify($scope.datas);
+      fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
+
       window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no 
                 , "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
     }
