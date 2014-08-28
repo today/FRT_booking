@@ -85,6 +85,17 @@
     <input type="button" value=" 保存 "  ng-click="saveBooking()"  /> 
     <input type="button" value=" 取消 "  ng-click="hideEdit()" style="float:right;" />
 
+    <table width="100%">
+      <tr><th>编号</th><th>姓名</th><th>性别</th><th>年龄</th><th>电话</th></tr>
+      
+      <tr ng-repeat="custom in customers|filter: fields.patient_no|filter: fields.name| limitTo: 10 ">
+        <td>{{custom.patient_no}}</td>
+        <td>{{custom.patient_name}}</td>
+        <td>{{custom.sex}}</td>
+        <td>{{custom.age}}</td>
+        <td>{{custom.mobile}}</td>
+      </tr>
+    </table>
 
     <br><br>  <br><br>  <br><br>  <br><br>  <br><br>  
     
@@ -115,6 +126,9 @@
     //$scope.fields.treat_date = objDate;
     // 日期加一天，预约一般都是预约明天的。
     $scope.selected_date = new Date(objDate.valueOf() + 1 * 24 * 3660 * 1000);
+
+    // 读入所有Customer 信息
+    $scope.customers = readFileToJson("./data/allCustomer.json");
 
     $scope.loadBooking = function() {
       $scope.datas = getBooking($scope.selected_date);

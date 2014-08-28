@@ -87,6 +87,21 @@ function makeBlankLine(aDate){
 	return obj;
 }
 
+/*  读文件并且转为Json返回   */
+function readFileToJson( filename ){
+	
+	aJson = "{'runResult':'start run.'}"
+	if(fs.existsSync( filename) ){
+		var strFileContent = fs.readFileSync(filename);
+	    
+		//console.log("getBooking(): " + strBookingList);
+
+	    aJson = JSON.parse(strFileContent);
+	}
+	return aJson;
+}
+
+
 
 /*  连接Mysql数据库   */
 function getConn(){
