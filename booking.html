@@ -69,11 +69,11 @@
     <h2 style="">编辑预约信息</h2>
     预约日期：<input type="text"   ng-model="show_date"  readonly style="width:150px" />
     <br/>
-    病历号:     <input  type="text" id="id_1"  ng-model="fields.patient_no"  style="width:80px" /> 
+    病历号:     <input  type="text" id="id_1"  ng-model="fields.patient_no"  style="width:80px" ng-readonly="edit_area_ReadOnly" /> 
     <br/>
-    姓名:     <input  type="text" id="id_2"  ng-model="fields.name" style="width:60px"  required/> &nbsp;&nbsp;&nbsp;
+    姓名:     <input  type="text" id="id_2"  ng-model="fields.name" style="width:60px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     <br/>
-    联系电话：<input type="tel" id="id_3" ng-model="fields.mobile" style="width:100px" ng-change="findInfo()" required />
+    联系电话：<input type="tel" id="id_3" ng-model="fields.mobile" style="width:100px" ng-readonly="edit_area_ReadOnly" required />
     <br/>
     <input  type="hidden"   ng-model="fields.case_no"  style="width:80px" readonly />
     <br/>
@@ -83,17 +83,23 @@
 
     <br>    
     <input type="button" value=" 保存 "  ng-click="saveBooking()"  /> 
+    <input type="button" value=" 初次就诊 或 需修改信息 "  ng-click="goNewPatient()"  /> 
     <input type="button" value=" 取消 "  ng-click="hideEdit()" style="float:right;" />
+    <br>
 
     <table width="100%">
-      <tr><th>编号</th><th>姓名</th><th>性别</th><th>年龄</th><th>电话</th></tr>
+      <tr><th colspan="6">搜索复诊患者信息</th></tr>
+      <tr><th colspan="3">姓名: <input  type="text" ng-model="search_name" style="width:60px" autofocus/></th>
+          <th colspan="3">联系电话：<input type="tel"  ng-model="search_mobile" style="width:100px" /></th></tr>
+      <tr><th>编号</th><th>姓名</th><th>性别</th><th>年龄</th><th>电话</th><th></th></tr>
       
-      <tr ng-repeat="custom in customers|filter: fields.patient_no|filter: fields.name| limitTo: 10 ">
+      <tr ng-repeat="custom in customers|filter: search_name|filter: search_mobile| limitTo: 10 ">
         <td>{{custom.patient_no}}</td>
         <td>{{custom.patient_name}}</td>
         <td>{{custom.sex}}</td>
         <td>{{custom.age}}</td>
         <td>{{custom.mobile}}</td>
+        <td><button ng-click="goFill( custom.patient_no )">选定</button></td>
       </tr>
     </table>
 
@@ -116,6 +122,7 @@
     
 
     $scope.edit_area = false;
+    $scope.edit_area_ReadOnly = true;
     $scope.show_date = '';
 
     $scope.fields.patient_id= ""
@@ -170,6 +177,28 @@
 
       window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no 
                 , "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
+    }
+
+    
+    $scope.goFill = function( patientNo ) {
+      
+      var tempObj = _.findWhere($scope.customers, {"patient_no": patientNo});
+      if(tempObj){
+        // 设置值到输入框
+        $scope.fields.patient_no = tempObj.patient_no;
+        $scope.fields.name = tempObj.patient_name;
+        $scope.fields.mobile = tempObj.mobile;
+        
+        // 输入框变成  Readonly
+        $scope.edit_area_ReadOnly = true;
+      }
+    }
+
+    
+    $scope.goNewPatient = function( patientNo ) {
+        // 输入框变成 可编辑状态
+        // 并且标识出这是一个新患者 或者更改了老患者的信息
+        $scope.edit_area_ReadOnly = false;
     }
 
     $scope.goEdit = function( index ) {

@@ -1,5 +1,7 @@
 var fs = require('fs');
 var mysql = require('mysql');
+var _ = require('underscore');
+
 
 function isblank(strA){
 	if(strA){

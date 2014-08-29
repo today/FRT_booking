@@ -60,7 +60,7 @@ hr {
     right: 0;
     position: fixed;
     text-align: left;
-    width: 30%;
+    width: 35%;
     z-index: 10000;
     _position:absolute; /* for IE6 */
     _top: expression(documentElement.scrollTop + documentElement.clientHeight-this.offsetHeight); /* for IE6 */
