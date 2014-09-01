@@ -89,6 +89,21 @@ function makeBlankLine(aDate){
 	return obj;
 }
 
+// 把内容附加到文件中的 Json 数组中，作为最后一个成员。
+function appendToJsonFile( filename, aJsonObj ){
+	
+	// 打开文件，读入json串。  解析为json对象。
+	var fileStr = fs.readFileSync(filename);
+	//console.log("getBooking(): " + strBookingList);
+    var jsonObj = JSON.parse(fileStr);
+
+    // 将内容append为最后一个成员
+    jsonObj.push(aJsonObj)
+
+	var jsonStr = JSON.stringify(jsonObj);
+	fs.writeFileSync( filename, jsonStr);
+}
+
 /*  读文件并且转为Json返回   */
 function readFileToJson( filename ){
 	

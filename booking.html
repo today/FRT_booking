@@ -122,7 +122,7 @@
     
 
     $scope.edit_area = false;
-    $scope.edit_area_ReadOnly = true;
+    $scope.edit_area_ReadOnly = true;   // 这个flag同时用来Readonly和在保存时判断是否需要保存到 new_custom.json 中。
     $scope.show_date = '';
 
     $scope.fields.patient_id= ""
@@ -149,6 +149,12 @@
       // Write a file:
       fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
       //confirm("保存成功" );
+
+      // 如果是新来的病人，或者信息有修改，保存内容到  new_custom.json 文件中。
+      if( $scope.edit_area_ReadOnly == false ){
+        appendToJsonFile( "data/new_custom.json", $scope.fields );
+      }
+
       $scope.flag_msg_show = true;
       setTimeout(function(){
                               $scope.flag_msg_show = false;
@@ -229,6 +235,7 @@
         }
       };
 
+      // 此函数暂时没有用
       $scope.saveToDB = function() {
         $scope.datas.isUpload = true;
         var conn = getConn();
