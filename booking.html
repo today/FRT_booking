@@ -27,8 +27,16 @@
     
     <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。</span>
     <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库，可以上传数据了。</span>
+
+
+    <input type="button" value="set color" ng-click="myStyle={color:'red'}">
+<input type="button" value="set background" ng-click="myStyle={'background-color':'blue'}">
+<input type="button" value="clear" ng-click="myStyle={}">
+<br/>
+<span ng-style="myStyle">Sample Text</span>
+<pre>myStyle={{myStyle}}</pre>
     
-    <span style="float:left;">
+    <span style="float:left;"   >
       选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" />
       <button ng-hide="true"  ng-click="make_no()" > 生成病历号 </button>
     </span>
@@ -41,13 +49,13 @@
         <th style="width:65px;">病历号</th>
         <th style="width:60px;">姓名</th>
         <th style="width:60px;"></th>
-        <th style="width:100px;">联系电话</th>
+        <th style="width:100px;">联系电话</th>  
         <th style="width:150px;">预约备注</th>
         <th style="width:40px;"></th>
         
       </tr>
-      <tr ng-repeat="obj in datas.bookinglist track by obj.index">
-        <td align="center">{{obj.index}}</td>
+      <tr ng-repeat="obj in datas.bookinglist track by obj.index" ng-style="show_color[obj.index]"  >
+        <td align="center"  >  {{obj.index}}</td>
         <td>{{obj.case_no}}</td>
         <td>{{obj.patient_no}}</td>
         <td>{{obj.name}}</td>
@@ -123,6 +131,19 @@
     $scope.edit_area_ReadOnly = true;   // 这个flag同时用来Readonly和在保存时判断是否需要保存到 new_custom.json 中。
     $scope.show_date = '';
 
+    $scope.show_color = [];
+    $scope.show_color[4] = {'background-color':'#FE8'};
+    $scope.show_color[10] = {'background-color':'#FE8'};
+    $scope.show_color[11] = {'background-color':'#FE8'};
+    $scope.show_color[14] = {'background-color':'#FE8'};
+    $scope.show_color[17] = {'background-color':'#FE8'};
+    $scope.show_color[18] = {'background-color':'#FE8'};
+    $scope.show_color[23] = {'background-color':'#FE8'};
+    $scope.show_color[24] = {'background-color':'#FE8'};
+    $scope.show_color[25] = {'background-color':'#FE8'};
+    $scope.show_color[34] = {'background-color':'#FE8'};
+    
+
     $scope.fields.patient_id= ""
     $scope.fields.case_id= ""
     
@@ -169,6 +190,10 @@
     $scope.hideEdit = function() {
       $scope.fields = {};
       $scope.edit_area = false;
+    }
+
+    $scope.setColor = function( index_num ) {
+      return  'style=""';
     }
 
     $scope.goPrint = function(obj){
