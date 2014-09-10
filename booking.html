@@ -27,14 +27,6 @@
     
     <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。</span>
     <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库，可以上传数据了。</span>
-
-
-    <input type="button" value="set color" ng-click="myStyle={color:'red'}">
-<input type="button" value="set background" ng-click="myStyle={'background-color':'blue'}">
-<input type="button" value="clear" ng-click="myStyle={}">
-<br/>
-<span ng-style="myStyle">Sample Text</span>
-<pre>myStyle={{myStyle}}</pre>
     
     <span style="float:left;"   >
       选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" />
@@ -77,7 +69,7 @@
     <h3 style="">编辑预约信息</h3>
     预约日期：<input type="text"   ng-model="show_date"  readonly style="width:150px" />
     <br/>
-    病历号:     <input  type="text" id="id_1"  ng-model="fields.patient_no"  style="width:80px" ng-readonly="edit_area_ReadOnly" /> 
+    病历号:     <input  type="text" id="id_1"  ng-model="fields.patient_no"  style="width:80px" ng-readonly="true" /> 
     <br/>
     姓名:     <input  type="text" id="id_2"  ng-model="fields.name" style="width:60px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     <br/>
@@ -89,7 +81,8 @@
 
     <br>    
     <input type="button" value=" 保存 "  ng-click="saveBooking()"  /> 
-    <input type="button" value=" 初次就诊 或 需修改信息 "  ng-click="goNewPatient()"  /> 
+    <input type="button" value="初次就诊"   ng-click="goNewPatient()"  /> 
+    <input type="button" value="修改信息 "  ng-click="goEditPatient()"  /> 
     <input type="button" value=" 取消 "  ng-click="hideEdit()" style="float:right;" />
     <br><br>
 
@@ -112,9 +105,8 @@
     <br><br>  <br><br>  <br><br>  <br><br>  <br><br>  
     
   </div>
-  <h1 id="auto_hide_msg" ng-show="flag_msg_show" >保存成功</h1>
-  <input type="hidden" value=" 测试:  " ng-click="test002()"  />
-
+  <h1 id="auto_hide_msg" ng-show="flag_msg_show" style="text-align:center;padding-top: 50px;" > 保 存 成 功 </h1>
+  
   <script type="text/javascript">
   
   var inputApp = angular.module('inputApp', []);
@@ -131,7 +123,7 @@
     $scope.edit_area_ReadOnly = true;   // 这个flag同时用来Readonly和在保存时判断是否需要保存到 new_custom.json 中。
     $scope.show_date = '';
 
-    $scope.show_color = [];
+    $scope.show_color = [];   // 用来设置特定行的颜色
     $scope.show_color[4] = {'background-color':'#FE8'};
     $scope.show_color[10] = {'background-color':'#FE8'};
     $scope.show_color[11] = {'background-color':'#FE8'};
@@ -171,7 +163,9 @@
 
       // 如果是新来的病人，或者信息有修改，保存内容到  new_custom.json 文件中。
       if( $scope.edit_area_ReadOnly == false ){
+        $scope.edit_area_ReadOnly = true;
         appendToJsonFile( "data/new_custom.json", $scope.fields );
+        
       }
 
       $scope.flag_msg_show = true;
@@ -230,10 +224,17 @@
         $scope.edit_area_ReadOnly = false;
     }
 
+    $scope.goEditPatient = function( patientNo ) {
+        // 输入框变成 可编辑状态
+        // 并且标识出这是一个新患者 或者更改了老患者的信息
+        $scope.edit_area_ReadOnly = false;
+    }
+
     $scope.goEdit = function( index ) {
       $scope.fields = $scope.datas.bookinglist[index];
       $scope.show_date = getYMD($scope.selected_date);
       $scope.edit_area = true;
+      $scope.edit_area_ReadOnly = true;
       
       //alert(document.getElementById("patient_no"));
       setTimeout(function(){
@@ -364,10 +365,7 @@
         
       };
 
-      $scope.test002 = function() {
-        //$scope.datas.isUpload = true;
-        
-      };
+      
 
       $scope.testFill = function() {
         $scope.fields.patient_id =  "00001";
