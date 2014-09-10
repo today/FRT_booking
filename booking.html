@@ -39,14 +39,14 @@
         <th style="width:45px;">预约编号</th>
         <th style="width:120px;">门诊号</th>
         <th style="width:65px;">病历号</th>
-        <th style="width:60px;">姓名</th>
+        <th style="width:75px;">姓名</th>
         <th style="width:60px;"></th>
         <th style="width:100px;">联系电话</th>  
         <th style="width:150px;">预约备注</th>
         <th style="width:40px;"></th>
         
       </tr>
-      <tr ng-repeat="obj in datas.bookinglist track by obj.index" ng-style="show_color[obj.index]"  >
+      <tr ng-repeat="obj in datas.bookinglist " ng-style="show_color[obj.index]"  >
         <td align="center"  >  {{obj.index}}</td>
         <td>{{obj.case_no}}</td>
         <td>{{obj.patient_no}}</td>
@@ -154,7 +154,8 @@
 
 
     $scope.saveBooking = function() {
-
+    
+      $scope.datas.bookinglist[$scope.fields.index-1] = $scope.fields;
       var aStr = JSON.stringify($scope.datas);
       // console.log( "$scope.datas = ###" + aStr + "###" );
       // Write a file:
@@ -264,7 +265,7 @@
     }
 
     $scope.goEdit = function( index ) {
-      $scope.fields = $scope.datas.bookinglist[index];
+      $scope.fields = _.clone($scope.datas.bookinglist[index]);
       $scope.show_date = getYMD($scope.selected_date);
       $scope.edit_area = true;
       $scope.edit_area_ReadOnly = true;
