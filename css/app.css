@@ -35,6 +35,7 @@ hr {
 
 #auto_hide_msg{
   padding:10px;
+  padding-top: 50px;
   background-color:#66F;
   color:#FFFFFF;
   width:300px;height:150px;
@@ -45,7 +46,7 @@ hr {
   margin-left:-150px;
   margin-top:-75px;
   text-align:center;
-  padding-top: 50px;
+  
 }
 
 
