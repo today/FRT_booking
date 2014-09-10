@@ -17,7 +17,7 @@
     <input type="button" value=" 测试: 填充数据 " ng-click="test_fill()"  />
     <button ng-click="ifNoDB()" style="float:right;" >连接数据库</button>
     <button ng-click="getHistory()" style="float:right;" ng-Disabled="noDB" >获取病历</button>
-    <button ng-click="saveToDB()" style="float:right;" ng-Disabled="noDB" ng-hide="datas.isUpload" >上传预约数据</button>
+    
   </span>
   <h1 style="">
     福润堂 预约 
@@ -213,17 +213,54 @@
       }
     }
 
-    
-    $scope.goNewPatient = function( patientNo ) {
-        // 输入框变成 可编辑状态
-        // 并且标识出这是一个新患者 或者更改了老患者的信息
-        $scope.edit_area_ReadOnly = false;
+    var getPatientNo = function(obj){
+      var iRet = 0;
+      if(obj.patient_no){
+        var tempVal = parseInt(obj.patient_no);
+        if( ! isNaN(tempVal) ){
+          iRet = parseInt(obj.patient_no);
+        }
+      }
+      return iRet ;
     }
 
-    $scope.goEditPatient = function( patientNo ) {
+    var getNewPatientNo = function(){
+      var maxObj_A = _.max($scope.customers, getPatientNo);
+      var maxObj_B = _.max($scope.datas.bookinglist, getPatientNo);
+
+      var maxNo_A = 0;
+      var maxNo_B = 0;
+      if(maxObj_A){
+        maxNo_A = getPatientNo(maxObj_A);
+      }
+      if(maxObj_B){
+        maxNo_B = getPatientNo(maxObj_B);
+      }
+      if( maxNo_A > maxNo_B ){
+        return (maxNo_A+1);
+      }else{
+        return (maxNo_B+1);
+      }
+    }
+    
+    $scope.goNewPatient = function() {
         // 输入框变成 可编辑状态
         // 并且标识出这是一个新患者 或者更改了老患者的信息
         $scope.edit_area_ReadOnly = false;
+        
+        if( $scope.fields.patient_no == 0 ){
+          // 设置更改标记为  insert
+          $scope.fields.db_flag = "insert";
+          // 生成病历号
+          $scope.fields.patient_no = getNewPatientNo();
+        }else{
+          // 设置更改标记为  update
+          $scope.fields.db_flag = "update";
+        }      
+    }
+
+    $scope.goEditPatient = function() {
+        $scope.goNewPatient();
     }
 
     $scope.goEdit = function( index ) {
@@ -255,54 +292,7 @@
         }
       };
 
-      // 此函数暂时没有用
-      $scope.saveToDB = function() {
-        $scope.datas.isUpload = true;
-        var conn = getConn();
-        conn.connect();
-        
-        var strBookingDate = getYMD($scope.selected_date);;
-        // 检查是否已经上传了这一天的数据，不允许重复上传。
-        var strSQL = "select count(booking_date) as haveNum from t_booking where booking_date='" + strBookingDate + "'";
-        conn.query(strSQL, function(err, result) {
-            if (err) throw err;
-            console.log('The result number is: ', result[0].haveNum);
-            if( result[0].haveNum == 0 ){
-                var objList = $scope.datas.bookinglist
-                for( i=0; i<objList.length; i++ ){
-                  var obj = objList[i];
-                  console.log(obj.name);
-
-                  if(!isblank(obj.name)){
-                    
-                    var strSQL2 =  "insert into t_booking ( booking_date, booking_index, name, "
-                              + "patient_no, case_no, mobile, comment, treat_date) values "
-                              + "('"+ obj.treat_date +"','"+ obj.index +"','"+ obj.name +"','"
-                              + obj.patient_no +"','"+ obj.case_no +"','"+ obj.mobile +"','"
-                              + obj.comment +"','"+ obj.treat_date +"')";
-                
-                    conn.query(strSQL2, function(err, result) {
-                        if (err) {
-                          console.log( err);
-                          //console.log('strSQL2 :', strSQL2);
-                          throw err;
-                        }
-                        console.log('The result.id is: ', result.insertId );
-                        
-                    });
-                  }
-                }
-                $scope.saveBooking();
-                conn.end();
-
-            }else{
-                alert("预约信息已经在数据库中存在了，不可重复上传！");
-            }
-        });
-        //$scope.saveBooking();
-        //$scope.loadBooking();
-                
-      };
+      
 
       /*  测试数据库是否可访问   */
       $scope.ifNoDB = function (){
