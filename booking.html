@@ -72,8 +72,10 @@
     病历号:     <input  type="text" id="id_1"  ng-model="fields.patient_no"  style="width:80px" ng-readonly="true" /> 
     <br/>
     姓名:     <input  type="text" id="id_2"  ng-model="fields.name" style="width:60px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
+    性别:     <input  type="text" id="id_3"  ng-model="fields.sex" style="width:25px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
+    年龄:     <input  type="text" id="id_4"  ng-model="fields.age" style="width:40px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     <br/>
-    联系电话：<input type="tel" id="id_3" ng-model="fields.mobile" style="width:100px" ng-readonly="edit_area_ReadOnly" required />
+    联系电话：<input type="tel" id="id_5" ng-model="fields.mobile" style="width:100px" ng-readonly="edit_area_ReadOnly" required />
     <br/>
     <input  type="hidden"   ng-model="fields.case_no"  style="width:80px" readonly />
 
@@ -136,8 +138,13 @@
     $scope.show_color[34] = {'background-color':'#FE8'};
     
 
-    $scope.fields.patient_id= ""
-    $scope.fields.case_id= ""
+    $scope.fields.patient_id = "";
+    $scope.fields.patient_no = "";
+    $scope.fields.name = "";
+    $scope.fields.mobile = "";
+    $scope.fields.age = "";
+    $scope.fields.sex = "";
+    $scope.fields.comment = "";
     
 
     var objDate = new Date(); 
@@ -219,13 +226,16 @@
 
     
     $scope.goFill = function( patientNo ) {
-      
-      var tempObj = _.findWhere($scope.customers, {"patient_no": patientNo});
+      console.log(patientNo);
+      var tempObj = _.findWhere($scope.allCustomer, {"patient_no": patientNo});
+      console.log(tempObj);
       if(tempObj){
         // 设置值到输入框
         $scope.fields.patient_no = tempObj.patient_no;
         $scope.fields.name = tempObj.patient_name;
         $scope.fields.mobile = tempObj.mobile;
+        $scope.fields.sex = tempObj.sex;
+        $scope.fields.age = tempObj.age;
         
         // 输入框变成  Readonly
         $scope.edit_area_ReadOnly = true;
