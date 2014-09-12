@@ -92,7 +92,7 @@
           <th colspan="3">联系电话：<input type="tel"  ng-model="search_mobile" style="width:100px" /></th></tr>
       <tr><th>编号</th><th>姓名</th><th>性别</th><th>年龄</th><th>电话</th><th></th></tr>
       
-      <tr ng-repeat="custom in customers|filter: search_name|filter: search_mobile| limitTo: 10 ">
+      <tr ng-repeat="custom in allCustomer|filter: search_name|filter: search_mobile| limitTo: 10 ">
         <td>{{custom.patient_no}}</td>
         <td>{{custom.patient_name}}</td>
         <td>{{custom.sex}}</td>
@@ -145,12 +145,21 @@
     // 日期加一天，预约一般都是预约明天的。
     $scope.selected_date = new Date(objDate.valueOf() + 1 * 24 * 3660 * 1000);
 
-    // 读入所有Customer 信息
-    $scope.customers = readFileToJson("./data/allCustomer.json");
-
     $scope.loadBooking = function() {
       $scope.datas = getBooking($scope.selected_date);
     };
+
+    $scope.getAllCustom = function(){
+      var  oldCustom = readFileToJson("./data/allCustomer.json");
+      // console.log(oldCustom);
+      var  newCustom = readFileToJson("./data/new_custom.json");
+      // console.log(newCustom);
+      return _.union(oldCustom, newCustom);
+    };
+
+    // 读入所有Customer 信息
+    $scope.allCustomer = $scope.getAllCustom();
+    console.log(" len:" + $scope.allCustomer.length);
 
 
     $scope.saveBooking = function() {
@@ -165,8 +174,17 @@
       // 如果是新来的病人，或者信息有修改，保存内容到  new_custom.json 文件中。
       if( $scope.edit_area_ReadOnly == false ){
         $scope.edit_area_ReadOnly = true;
-        appendToJsonFile( "data/new_custom.json", $scope.fields );
-        
+        var tempCustom = {};
+        tempCustom.patient_no = $scope.fields.patient_no;
+        tempCustom.patient_name = $scope.fields.name;
+        tempCustom.mobile = $scope.fields.mobile;
+        tempCustom.sex = $scope.fields.sex;
+        tempCustom.age = $scope.fields.age;
+        tempCustom.remark = "";
+    
+        appendToJsonFile( "data/new_custom.json", tempCustom );
+        // 并且重新读入全部患者信息。
+        $scope.allCustomer = $scope.getAllCustom();
       }
 
       $scope.flag_msg_show = true;
@@ -226,22 +244,16 @@
     }
 
     var getNewPatientNo = function(){
-      var maxObj_A = _.max($scope.customers, getPatientNo);
-      var maxObj_B = _.max($scope.datas.bookinglist, getPatientNo);
-
-      var maxNo_A = 0;
-      var maxNo_B = 0;
+      
+      var maxObj_A = _.max( $scope.allCustomer, getPatientNo);
+      
       if(maxObj_A){
         maxNo_A = getPatientNo(maxObj_A);
-      }
-      if(maxObj_B){
-        maxNo_B = getPatientNo(maxObj_B);
-      }
-      if( maxNo_A > maxNo_B ){
-        return (maxNo_A+1);
       }else{
-        return (maxNo_B+1);
+        alert("程序出错，请联系开发人员。");
       }
+      
+      return (maxNo_A+1); 
     }
     
     $scope.goNewPatient = function() {
@@ -324,36 +336,7 @@
         
       };
 
-      // 根据电话号码，找出患者信息。
-      $scope.findInfo = function() {
-
-        var database = {};
-        var strFilename = "data/database.json"
-        if(fs.existsSync( strFilename) ){
-          var strBookingList = fs.readFileSync(strFilename);
-          database = JSON.parse(strBookingList);
-          //console.log(database);
-          var findObj = {};
-          findObj.mobile = $scope.fields.mobile;
-          var tempObj = _.findWhere(database.patient_list, findObj );
-          
-
-          if(tempObj){
-            $scope.fields.name = tempObj.patient_name;
-            $scope.fields.patient_no = tempObj.patient_no;
-            $scope.fields.comment = tempObj.comment;
-          }else{
-            // todo  新患者提示
-          }
-          
-        }else{
-          // todo  出错提示，存放患者信息的json文件不存在。
-        }
-        
-      };
-
       
-
       $scope.testFill = function() {
         $scope.fields.patient_id =  "00001";
         $scope.fields.case_id =  "00002";
