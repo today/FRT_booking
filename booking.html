@@ -5,6 +5,11 @@
   <title>福润堂 预约</title>
   
   <link rel="stylesheet" href="css/app.css">
+  <style type="text/css">
+    input.ng-invalid.ng-dirty, input.ng-invalid.ng-invalid {
+      background-color: yellow;
+    }
+  </style>
   
   <script type="text/javascript" src="lib/angular.js"></script>
   <script type="text/javascript" src="node_modules/underscore/underscore.js"></script>
@@ -71,11 +76,11 @@
     <br/>
     病历号:     <input  type="text" id="id_1"  ng-model="fields.patient_no"  style="width:80px" ng-readonly="true" /> 
     <br/>
-    姓名:     <input  type="text" id="id_2"  ng-model="fields.name" style="width:60px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
+    姓名:     <input  type="text" id="id_2"  ng-model="fields.name" style="width:60px" required ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     性别:     <input  type="text" id="id_3"  ng-model="fields.sex" style="width:25px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     年龄:     <input  type="text" id="id_4"  ng-model="fields.age" style="width:40px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     <br/>
-    联系电话：<input type="tel" id="id_5" ng-model="fields.mobile" style="width:100px" ng-readonly="edit_area_ReadOnly" required />
+    联系电话：<input type="tel" id="id_5" ng-model="fields.mobile" ng-pattern="/[0-9]/" style="width:100px" ng-readonly="edit_area_ReadOnly" required />
     <br/>
     <input  type="hidden"   ng-model="fields.case_no"  style="width:80px" readonly />
 
@@ -170,6 +175,12 @@
 
 
     $scope.saveBooking = function() {
+
+      // 检查必选项，如果为空，不予保存
+      if(isblank($scope.fields.name) || isblank($scope.fields.patient_no)){
+        alert("病历号和姓名不能为空。");
+        return false;
+      }
     
       $scope.datas.bookinglist[$scope.fields.index-1] = $scope.fields;
       var aStr = JSON.stringify($scope.datas);
