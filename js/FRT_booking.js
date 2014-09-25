@@ -12,7 +12,7 @@ function isblank(strA){
 				return false;
 			}
 		}else{
-			return true;
+			return false;
 		}
 	}else{
 		return true;
