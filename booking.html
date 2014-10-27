@@ -28,7 +28,7 @@
     福润堂 预约 
     
   </h1> 
-  <div style="float:left;width:600px;">
+  <div style="float:left;width:630px;">
     
     <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。</span>
     <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库，可以上传数据了。</span>
@@ -131,16 +131,17 @@
     $scope.show_date = '';
 
     $scope.show_color = [];   // 用来设置特定行的颜色
+    $scope.show_color[1] = {'background-color':'#FE8'};
     $scope.show_color[4] = {'background-color':'#FE8'};
     $scope.show_color[10] = {'background-color':'#FE8'};
-    $scope.show_color[11] = {'background-color':'#FE8'};
+    //$scope.show_color[11] = {'background-color':'#FE8'};
     $scope.show_color[14] = {'background-color':'#FE8'};
     $scope.show_color[17] = {'background-color':'#FE8'};
     $scope.show_color[18] = {'background-color':'#FE8'};
-    $scope.show_color[23] = {'background-color':'#FE8'};
-    $scope.show_color[24] = {'background-color':'#FE8'};
+    //$scope.show_color[23] = {'background-color':'#FE8'};
+    //$scope.show_color[24] = {'background-color':'#FE8'};
     $scope.show_color[25] = {'background-color':'#FE8'};
-    $scope.show_color[34] = {'background-color':'#FE8'};
+    //$scope.show_color[34] = {'background-color':'#FE8'};
     
 
     $scope.fields.patient_id = "";
