@@ -15,10 +15,10 @@
     
     <h2><span id="xingming"></span></h2>
   
-   <br><br><br> <input type="button" value=" 打印 "  onclick="goPrint()"  /> 
+   <br><br> <input id="btn_prt" type="button" value=" 打印 "  onclick="goPrint()"  /> 
     
 
-<input type="button" value=" 关闭 "  onclick="goClose()"  /> 
+<input id="btn_close" type="button" value=" 关闭 "  onclick="goClose()"  /> 
 
   </center>
   <script type="text/javascript">
@@ -49,6 +49,19 @@
     var goClose = function(){
       window.close();
     };
+
+    
+
+    setTimeout(function(){
+                            var obj1 = document.getElementById("btn_prt");
+                            var obj2 = document.getElementById("btn_close");
+                            obj1.style.display="none";
+                            obj2.style.display="none";
+                            window.print();  
+                           },1000);
+    setTimeout(function(){
+                            //window.close();  
+                           },5000);
   </script>
 </body>
 </html>
