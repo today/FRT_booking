@@ -80,11 +80,12 @@
     性别:     <input  type="text" id="id_3"  ng-model="fields.sex" style="width:25px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     年龄:     <input  type="text" id="id_4"  ng-model="fields.age" style="width:40px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     <br/>
-    联系电话：<input type="tel" id="id_5" ng-model="fields.mobile" ng-pattern="/[0-9]/" style="width:100px" ng-readonly="edit_area_ReadOnly" required />
+    电话：<input type="tel" id="id_5" ng-model="fields.mobile" ng-pattern="/[0-9]/" style="width:100px" ng-readonly="edit_area_ReadOnly" required /> &nbsp;
+    备注：<input type="tel" id="id_6" ng-model="fields.remark"  style="width:100px" ng-readonly="edit_area_ReadOnly" />
     <br/>
     <input  type="hidden"   ng-model="fields.case_no"  style="width:80px" readonly />
 
-    预约备注:     <textarea  ng-model="fields.comment"  id="id_4"     style="width:181px"   ></textarea><br/>
+    预约备注:     <textarea  ng-model="fields.comment"  id="id_7"     style="width:181px"   ></textarea><br/>
 
     <br>    
     <input type="button" value=" 保存 "  ng-click="saveBooking()"  /> 
@@ -199,9 +200,16 @@
         tempCustom.mobile = $scope.fields.mobile;
         tempCustom.sex = $scope.fields.sex;
         tempCustom.age = $scope.fields.age;
-        tempCustom.remark = "";
+        tempCustom.remark = $scope.fields.remark;;
     
+        // 检查 new_custom.json 是否存在。
+        var filename = 'data/new_custom.json';
+        if( ! fs.exists( filename ) ){
+          console.log( "The file " + filename + " not exists." );
+          fs.writeFileSync(filename,"[]");
+        }
         appendToJsonFile( "data/new_custom.json", tempCustom );
+
         // 并且重新读入全部患者信息。
         $scope.allCustomer = $scope.getAllCustom();
       }
@@ -211,7 +219,6 @@
                               $scope.flag_msg_show = false;
                               $scope.$apply();
                             },1000);
-
 
       //$scope.loadBooking();
       $scope.fields = {};

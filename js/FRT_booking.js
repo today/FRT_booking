@@ -94,6 +94,7 @@ function appendToJsonFile( filename, aJsonObj ){
 	
 	// 打开文件，读入json串。  解析为json对象。
 	var fileStr = fs.readFileSync(filename);
+
 	//console.log("getBooking(): " + strBookingList);
     var jsonObj = JSON.parse(fileStr);
 
@@ -109,10 +110,8 @@ function readFileToJson( filename ){
 	
 	aJson = "{'runResult':'start run.'}"
 	if(fs.existsSync( filename) ){
-		var strFileContent = fs.readFileSync(filename);
-	    
+		var strFileContent = fs.readFileSync(filename);   
 		//console.log("getBooking(): " + strBookingList);
-
 	    aJson = JSON.parse(strFileContent);
 	}
 	return aJson;
