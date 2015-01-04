@@ -66,7 +66,7 @@
     <br/>
     <input type="button" ng-click="addLine(5)"  value=" 再加 5 行 ">
     <br><br>
-    
+    <input type="button" ng-click="upload_Booking()"  value=" 保存到服务器 ">
     <br><br> 
   </div>
 
@@ -119,7 +119,7 @@
   
   var inputApp = angular.module('inputApp', []);
 
-  function Ctrl($scope) {
+  function Ctrl($scope, $http) {
     $scope.fields = {};
     $scope.datas = {};
     $scope.datas.isUpload = false;
@@ -192,7 +192,7 @@
       //confirm("保存成功" );
 
       // 如果是新来的病人，或者信息有修改，保存内容到  new_custom.json 文件中。
-      if( $scope.edit_area_ReadOnly == false ){
+      if( $scope.edit_area_ReadOnly === false ){
         $scope.edit_area_ReadOnly = true;
         var tempCustom = {};
         tempCustom.patient_no = $scope.fields.patient_no;
@@ -200,7 +200,7 @@
         tempCustom.mobile = $scope.fields.mobile;
         tempCustom.sex = $scope.fields.sex;
         tempCustom.age = $scope.fields.age;
-        tempCustom.remark = $scope.fields.remark;;
+        tempCustom.remark = $scope.fields.remark;
     
         // 检查 new_custom.json 是否存在。
         var filename = 'data/new_custom.json';
@@ -229,7 +229,7 @@
     $scope.hideEdit = function() {
       $scope.fields = {};
       $scope.edit_area = false;
-    }
+    };
 
     $scope.goPrint = function(obj){
       //alert(obj.index);
@@ -241,7 +241,7 @@
 
       window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no 
                 , "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
-    }
+    };
 
     
     $scope.goFill = function( patientNo ) {
@@ -259,7 +259,7 @@
         // 输入框变成  Readonly
         $scope.edit_area_ReadOnly = true;
       }
-    }
+    };
 
     var getPatientNo = function(obj){
       var iRet = 0;
@@ -270,7 +270,7 @@
         }
       }
       return iRet ;
-    }
+    };
 
     var getNewPatientNo = function(){
       
@@ -283,14 +283,14 @@
       }
       
       return (maxNo_A+1); 
-    }
+    };
     
     $scope.goNewPatient = function() {
         // 输入框变成 可编辑状态
         // 并且标识出这是一个新患者 或者更改了老患者的信息
         $scope.edit_area_ReadOnly = false;
         
-        if( $scope.fields.patient_no == 0 ){
+        if( $scope.fields.patient_no === 0 ){
           // 设置更改标记为  insert
           $scope.fields.db_flag = "insert";
           // 生成病历号
@@ -299,11 +299,11 @@
           // 设置更改标记为  update
           $scope.fields.db_flag = "update";
         }      
-    }
+    };
 
     $scope.goEditPatient = function() {
         $scope.goNewPatient();
-    }
+    };
 
     $scope.goEdit = function( index ) {
       $scope.fields = _.clone($scope.datas.bookinglist[index]);
@@ -366,6 +366,21 @@
       };
 
       
+      // 上传预约数据到Server
+      $scope.upload_Booking = function() {
+        postData = $scope.datas;
+        console.log($scope.datas);
+        var config = {}; 
+        $http.post('http://localhost:8080/saveBooking',  postData)
+          .success(function(data, status, headers, config) {  
+            console.log("upload successful. " + data);
+        })
+          .error(function(data, status, headers, config) {  
+              console.log("upload error.");  
+        });  
+      };
+
+      
       $scope.testFill = function() {
         $scope.fields.patient_id =  "00001";
         $scope.fields.case_id =  "00002";
@@ -383,7 +398,7 @@
     // 这一段是用来显示隐藏debug区的。
     if (keynum==192){
       
-      if( debug_flag == 0 ){
+      if( debug_flag === 0 ){
         debug_flag++;
       }else if(debug_flag == 1 ){
         debug_flag++;
@@ -404,7 +419,7 @@
         if( temp_id ){
           var str_id = temp_id.substring(3); 
           //console.log("id:" , str_id );
-          var i_id = new Number(str_id);
+          var i_id = new parseInt(str_id);
           var obj = document.getElementById('id_' + (i_id + 1) );
           if( obj ){
             obj.focus();
