@@ -334,28 +334,6 @@
         }
       };
 
-      
-
-      /*  测试数据库是否可访问   */
-      $scope.ifNoDB = function (){
-        var conn = getConn();
-        conn.connect();
-
-        conn.query('SELECT * from t_setting', function(err, rows, fields) {
-          if (err) {
-            $scope.noDB = true;
-            $scope.$apply();
-            //console.log("XXXXXXXXXXXXXX" + $scope.noDB );
-          }else{
-            $scope.noDB = false;
-            $scope.$apply();
-            //console.log("OOOOOOOOOOOOOO" + $scope.noDB );
-          }
-
-        });
-        conn.end();
-      };
-
       $scope.loadBooking();
       
       // 生成病历号和门诊号。
