@@ -290,7 +290,7 @@
         // 并且标识出这是一个新患者 或者更改了老患者的信息
         $scope.edit_area_ReadOnly = false;
         
-        if( $scope.fields.patient_no === 0 ){
+        if( $scope.fields.patient_no === "0" ){
           // 设置更改标记为  insert
           $scope.fields.db_flag = "insert";
           // 生成病历号
