@@ -173,9 +173,7 @@
 
     // 读入所有Customer 信息
     $scope.allCustomer = $scope.getAllCustom();
-    console.log(" len:" + $scope.allCustomer.length);
-
-
+    
     $scope.saveBooking = function() {
 
       // 检查必选项，如果为空，不予保存
@@ -281,7 +279,7 @@
       }else{
         alert("程序出错，请联系开发人员。");
       }
-      
+
       return (maxNo_A+1); 
     };
     
