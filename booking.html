@@ -237,8 +237,8 @@
       var aStr = JSON.stringify($scope.datas);
       fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
 
-      window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no 
-                , "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
+      window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no,
+                  "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
     };
 
     
@@ -394,8 +394,15 @@
         var temp_id = event.srcElement.id;
         if( temp_id ){
           var str_id = temp_id.substring(3); 
-          //console.log("id:" , str_id );
-          var i_id = new parseInt(str_id);
+          
+
+          var i_id = 0;
+          try{
+            i_id = parseInt(str_id);
+          }catch(error){
+            console.log("error:" , error );
+            console.log("id:" , str_id );
+          }
           var obj = document.getElementById('id_' + (i_id + 1) );
           if( obj ){
             obj.focus();
