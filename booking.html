@@ -202,7 +202,7 @@
     
         // 检查 new_custom.json 是否存在。
         var filename = 'data/new_custom.json';
-        if( ! fs.exists( filename ) ){
+        if( ! fs.existsSync( filename ) ){
           console.log( "The file " + filename + " not exists." );
           fs.writeFileSync(filename,"[]");
         }
