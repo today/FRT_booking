@@ -46,7 +46,8 @@
         <th style="width:65px;">病历号</th>
         <th style="width:100px;">姓名</th>
         <th style="width:60px;"></th>
-        <th style="width:100px;">联系电话</th>  
+        <th style="width:100px;">联系电话</th>
+        <th style="width:150px;">患者备注</th>  
         <th style="width:150px;">预约备注</th>
         <th style="width:40px;"></th>
         
@@ -58,6 +59,7 @@
         <td>{{obj.name}}</td>
         <td><input type="button" id="prt_{{obj.index}}" ng-click="goPrint( obj )"  value=" 打印 ">  </td>
         <td>{{obj.mobile}}</td>
+        <td>{{obj.remark}}</td>
         <td>{{obj.comment}}</td>
         <td><input type="button" ng-click="goEdit( $index )" ng-hide="datas.isUpload" value=" 修改 ">  </td>
         
@@ -152,6 +154,7 @@
     $scope.fields.age = "";
     $scope.fields.sex = "";
     $scope.fields.comment = "";
+    $scope.fields.remark = "";
     
 
     var objDate = new Date(); 
@@ -253,6 +256,7 @@
         $scope.fields.mobile = tempObj.mobile;
         $scope.fields.sex = tempObj.sex;
         $scope.fields.age = tempObj.age;
+        $scope.fields.remark = tempObj.remark;
         
         // 输入框变成  Readonly
         $scope.edit_area_ReadOnly = true;
