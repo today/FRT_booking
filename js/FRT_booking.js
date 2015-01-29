@@ -77,7 +77,7 @@ function makeBlankBooking( aDate, num ){
 } 
 
 function makeBlankLine(aDate){
-	var obj = new Object();
+	var obj = {};
 	
 	obj.treat_date = getYMD( aDate );
 	obj.patient_no =  "0";
@@ -85,6 +85,7 @@ function makeBlankLine(aDate){
     obj.mobile =  "";
     obj.name =  "";
     obj.comment =  "";
+    obj.doctor_name = "";
 	return obj;
 }
 
@@ -98,7 +99,7 @@ function appendToJsonFile( filename, aJsonObj ){
     var jsonObj = JSON.parse(fileStr);
 
     // 将内容append为最后一个成员
-    jsonObj.push(aJsonObj)
+    jsonObj.push(aJsonObj);
 
 	var jsonStr = JSON.stringify(jsonObj);
 	fs.writeFileSync( filename, jsonStr);
@@ -107,28 +108,13 @@ function appendToJsonFile( filename, aJsonObj ){
 /*  读文件并且转为Json返回   */
 function readFileToJson( filename ){
 	
-	aJson = "{'runResult':'start run.'}"
+	aJson = "{'runResult':'start run.'}";
 	if(fs.existsSync( filename) ){
 		var strFileContent = fs.readFileSync(filename);   
 		//console.log("getBooking(): " + strBookingList);
 	    aJson = JSON.parse(strFileContent);
 	}
 	return aJson;
-}
-
-
-
-/*  连接Mysql数据库   */
-function getConn(){
-	
-	var conn = mysql.createConnection({
-	    host: 'localhost',
-	    user: 'root',
-	    password: '',
-	    database:'frt',
-	    port: 3306
-	});
-	return conn;
 }
 
 

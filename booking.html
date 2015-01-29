@@ -13,7 +13,6 @@
   
   <script type="text/javascript" src="lib/angular.js"></script>
   <script type="text/javascript" src="node_modules/underscore/underscore.js"></script>
- 
   <script type="text/javascript" src="js/FRT_booking.js"></script>
 </head>
 <body ng-app="inputApp" ng-controller="Ctrl" >
@@ -29,10 +28,6 @@
     
   </h1> 
   <div style="float:left;width:630px;">
-    
-    <span ng-show="datas.isUpload" style="color:red;">数据已经上传完成，不可以修改了。</span>
-    <span ng-show="!noDB" style="float:right;color:blue;">已经连接数据库，可以上传数据了。</span>
-    
     <span style="float:left;"   >
       选择日期：<input type="date" ng-model="selected_date" ng-change="loadBooking()" style="width:150px" />
       <button ng-hide="true"  ng-click="make_no()" > 生成病历号 </button>
@@ -47,6 +42,7 @@
         <th style="width:100px;">姓名</th>
         <th style="width:60px;"></th>
         <th style="width:100px;">联系电话</th>
+        <th style="width:100px;">医师</th>
         <th style="width:150px;">患者备注</th>  
         <th style="width:150px;">预约备注</th>
         <th style="width:40px;"></th>
@@ -59,6 +55,7 @@
         <td>{{obj.name}}</td>
         <td><input type="button" id="prt_{{obj.index}}" ng-click="goPrint( obj )"  value=" 打印 ">  </td>
         <td>{{obj.mobile}}</td>
+        <td>{{obj.doctor_name}}</td>
         <td>{{obj.remark}}</td>
         <td>{{obj.comment}}</td>
         <td><input type="button" ng-click="goEdit( $index )" ng-hide="datas.isUpload" value=" 修改 ">  </td>
@@ -76,6 +73,9 @@
     <h3 style="">编辑预约信息</h3>
     预约日期：<input type="text"   ng-model="show_date"  readonly style="width:150px" />
     <br/>
+    医师姓名：<input type="radio" name="doctor_name" ng-model="fields.doctor_name" value="张医生">  张医生
+    <input type="radio" name="doctor_name" ng-model="fields.doctor_name" value="马医生">  马医生
+    <br/>
     病历号:     <input  type="text" id="id_1"  ng-model="fields.patient_no"  style="width:80px" ng-readonly="true" /> 
     <br/>
     姓名:     <input  type="text" id="id_2"  ng-model="fields.name" style="width:60px" required ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
@@ -83,6 +83,7 @@
     年龄:     <input  type="text" id="id_4"  ng-model="fields.age" style="width:40px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     <br/>
     电话：<input type="tel" id="id_5" ng-model="fields.mobile" ng-pattern="/[0-9]/" style="width:100px" ng-readonly="edit_area_ReadOnly" required /> &nbsp;
+
     备注：<input type="tel" id="id_6" ng-model="fields.remark"  style="width:100px" ng-readonly="true" />
     <br/>
     <input  type="hidden"   ng-model="fields.case_no"  style="width:80px" readonly />
@@ -97,9 +98,9 @@
     <br><br>
 
     <table width="100%">
-      
+
       <tr><th colspan="6">搜索: <input  type="text" id="id_a" ng-model="search_name" style="width:160px" autofocus /></th>
-         </tr>
+      </tr>
       <tr><th>编号</th><th>姓名</th><th>性别</th><th>年龄</th><th>电话</th><th></th></tr>
       
       <tr ng-repeat="custom in allCustomer|filter: search_name| limitTo: 10 ">
@@ -118,18 +119,29 @@
   <h1 id="auto_hide_msg" ng-show="flag_msg_show" style="text-align:center;padding-top: 50px;" > 保 存 成 功 </h1>
   
   <script type="text/javascript">
-  
-  var inputApp = angular.module('inputApp', []);
 
-  function Ctrl($scope, $http) {
-    $scope.fields = {};
-    $scope.datas = {};
-    $scope.datas.isUpload = false;
-    $scope.noDB = true;
-    $scope.flag_msg_show = false;
-    
+    var inputApp = angular.module('inputApp', []);
 
-    $scope.edit_area = false;
+    function Ctrl($scope, $http) {
+      $scope.fields = {};
+      $scope.datas = {};
+      $scope.datas.isUpload = false;
+      $scope.noDB = true;
+      $scope.flag_msg_show = false;
+
+      $scope.fields.patient_id = "";
+      $scope.fields.patient_no = "";
+      $scope.fields.name = "";
+      $scope.fields.mobile = "";
+      $scope.fields.age = "";
+      $scope.fields.sex = "";
+      $scope.fields.comment = "";
+      $scope.fields.remark = "";
+
+
+
+
+      $scope.edit_area = false;
     $scope.edit_area_ReadOnly = true;   // 这个flag同时用来Readonly和在保存时判断是否需要保存到 new_custom.json 中。
     $scope.show_date = '';
 
@@ -147,14 +159,7 @@
     //$scope.show_color[34] = {'background-color':'#FE8'};
     
 
-    $scope.fields.patient_id = "";
-    $scope.fields.patient_no = "";
-    $scope.fields.name = "";
-    $scope.fields.mobile = "";
-    $scope.fields.age = "";
-    $scope.fields.sex = "";
-    $scope.fields.comment = "";
-    $scope.fields.remark = "";
+    
     
 
     var objDate = new Date(); 
@@ -184,7 +189,7 @@
         alert("病历号和姓名不能为空。");
         return false;
       }
-    
+
       $scope.datas.bookinglist[$scope.fields.index-1] = $scope.fields;
       var aStr = JSON.stringify($scope.datas);
       // console.log( "$scope.datas = ###" + aStr + "###" );
@@ -202,7 +207,7 @@
         tempCustom.sex = $scope.fields.sex;
         tempCustom.age = $scope.fields.age;
         tempCustom.remark = $scope.fields.remark;
-    
+
         // 检查 new_custom.json 是否存在。
         var filename = 'data/new_custom.json';
         if( ! fs.existsSync( filename ) ){
@@ -217,9 +222,9 @@
 
       $scope.flag_msg_show = true;
       setTimeout(function(){
-                              $scope.flag_msg_show = false;
-                              $scope.$apply();
-                            },1000);
+        $scope.flag_msg_show = false;
+        $scope.$apply();
+      },1000);
 
       //$scope.loadBooking();
       $scope.fields = {};
@@ -233,15 +238,13 @@
     };
 
     $scope.goPrint = function(obj){
-      //alert(obj.index);
-      //var objBtn = document.getElementById("prt_" + obj.index);
-      //objBtn.style.color = "red";
+
       obj.comment = "已经打印  " + obj.comment;
       var aStr = JSON.stringify($scope.datas);
       fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
 
       window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no,
-                  "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
+        "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
     };
 
     
@@ -275,7 +278,7 @@
     };
 
     var getNewPatientNo = function(){
-      
+
       var maxObj_A = _.max( $scope.allCustomer, getPatientNo);
       
       if(maxObj_A){
@@ -301,43 +304,45 @@
           // 设置更改标记为  update
           $scope.fields.db_flag = "update";
         }      
-    };
+      };
 
-    $scope.goEditPatient = function() {
+      $scope.goEditPatient = function() {
         $scope.goNewPatient();
+      };
+
+      $scope.goEdit = function( index ) {
+        $scope.fields = _.clone($scope.datas.bookinglist[index]);
+        if( ! $scope.fields.doctor_name ){
+          $scope.fields.doctor_name = "张医生";
+        }else if( $scope.fields.doctor_name === "" ){
+          $scope.fields.doctor_name = "张医生";
+        }
+
+        $scope.show_date = getYMD($scope.selected_date);
+        $scope.edit_area = true;
+        $scope.edit_area_ReadOnly = true;
+
+        //alert(document.getElementById("patient_no"));
+        setTimeout(function(){
+          var inputObj = document.getElementById("id_a");
+          inputObj.focus();
+          inputObj.select();
+        },250);
+      };
+
+    $scope.addLine = function(linenum) {
+      var startIndex = $scope.datas.bookinglist.length;
+
+      for( i=0; i<linenum; i++ ){
+        var obj = makeBlankLine($scope.selected_date);
+        obj.index = i+startIndex+1;
+        obj.case_no = getYMD( $scope.selected_date ) + "_" + (startIndex + i + 1);
+        $scope.datas.bookinglist.push(obj);
+      }
     };
 
-    $scope.goEdit = function( index ) {
-      $scope.fields = _.clone($scope.datas.bookinglist[index]);
-      $scope.show_date = getYMD($scope.selected_date);
-      $scope.edit_area = true;
-      $scope.edit_area_ReadOnly = true;
-      
-      //alert(document.getElementById("patient_no"));
-      setTimeout(function(){
-                              var inputObj = document.getElementById("id_a");
-                              inputObj.focus();
-                              inputObj.select();
-                           },250);
-      
+    $scope.loadBooking();
 
-      // console.log( "$scope.datas.bookinglist = ###" + JSON.stringify($scope.datas.bookinglist) + "###" );
-
-      };
-
-      $scope.addLine = function(linenum) {
-        var startIndex = $scope.datas.bookinglist.length;
-        
-        for( i=0; i<linenum; i++ ){
-          var obj = makeBlankLine($scope.selected_date);
-          obj.index = i+startIndex+1;
-          obj.case_no = getYMD( $scope.selected_date ) + "_" + (startIndex + i + 1);
-          $scope.datas.bookinglist.push(obj);
-        }
-      };
-
-      $scope.loadBooking();
-      
       // 生成病历号和门诊号。
       $scope.make_no = function() {
         //循环
@@ -352,11 +357,11 @@
         console.log($scope.datas);
         var config = {}; 
         $http.post('http://localhost:8080/saveBooking',  postData)
-          .success(function(data, status, headers, config) {  
-            console.log("upload successful. " + data);
+        .success(function(data, status, headers, config) {  
+          console.log("upload successful. " + data);
         })
-          .error(function(data, status, headers, config) {  
-              console.log("upload error.");  
+        .error(function(data, status, headers, config) {  
+          console.log("upload error.");  
         });  
       };
 
@@ -371,13 +376,13 @@
       };
     }
 
-  debug_flag = 0;
-  document.onkeydown = function(event) { 
-    keynum = event.which;
+    debug_flag = 0;
+    document.onkeydown = function(event) { 
+      keynum = event.which;
 
     // 这一段是用来显示隐藏debug区的。
     if (keynum==192){
-      
+
       if( debug_flag === 0 ){
         debug_flag++;
       }else if(debug_flag == 1 ){
@@ -389,43 +394,43 @@
         debug_flag = 0;
         document.getElementById('debug_area').style.display="none";//隐藏
       }
-        
+
     }
 
     //alert(keynum);
     if (keynum==13){
-        
-        var temp_id = event.srcElement.id;
-        if( temp_id ){
-          var str_id = temp_id.substring(3); 
-          
 
-          var i_id = 0;
-          try{
-            i_id = parseInt(str_id);
-          }catch(error){
-            console.log("error:" , error );
-            console.log("id:" , str_id );
-          }
-          var obj = document.getElementById('id_' + (i_id + 1) );
-          if( obj ){
-            obj.focus();
-          }
-          else{
-            obj = document.getElementById( 'id_1' );
-            obj.focus();
-          }
+      var temp_id = event.srcElement.id;
+      if( temp_id ){
+        var str_id = temp_id.substring(3); 
+
+
+        var i_id = 0;
+        try{
+          i_id = parseInt(str_id);
+        }catch(error){
+          console.log("error:" , error );
+          console.log("id:" , str_id );
+        }
+        var obj = document.getElementById('id_' + (i_id + 1) );
+        if( obj ){
+          obj.focus();
         }
         else{
-          console.log("not input." );
+          obj = document.getElementById( 'id_1' );
+          obj.focus();
         }
-        
+      }
+      else{
+        console.log("not input." );
+      }
+
     }
   };
 
-    </script>
-  </body>
-  </html>
+</script>
+</body>
+</html>
 
 
 
