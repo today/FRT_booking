@@ -14,6 +14,8 @@
     <h2><span id="bianhao"></span>号</h2>
     
     <h2><span id="xingming"></span></h2>
+
+    <h2><span id="doctor"></span></h2>
   
    <br><br> <input id="btn_prt" type="button" value=" 打印 "  onclick="goPrint()"  /> 
   
@@ -29,6 +31,7 @@
 
     setV("bianhao", params[0]);
     setV("xingming", params[1]);
+    setV("doctor", params[3]);
 
     var riqi = params[2].substring(0,params[2].indexOf("_") );
     var ymd = riqi.split("-");

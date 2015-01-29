@@ -243,7 +243,7 @@
       var aStr = JSON.stringify($scope.datas);
       fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
 
-      window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no,
+      window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no+ ","+ obj.doctor_name,
         "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
     };
 
