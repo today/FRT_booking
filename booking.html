@@ -80,7 +80,7 @@
     <br/>
     姓名:     <input  type="text" id="id_2"  ng-model="fields.name" style="width:60px" required ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     性别:     <input  type="text" id="id_3"  ng-model="fields.sex" style="width:25px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
-    年龄:     <input  type="text" id="id_4"  ng-model="fields.age" style="width:40px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
+    年龄:     <input  type="text" id="id_4"  ng-model="fields.age" style="width:40px" ng-readonly="edit_area_ReadOnly" ng-pattern="/[0-9.]/" required/> &nbsp;&nbsp;&nbsp;
     <br/>
     电话：<input type="tel" id="id_5" ng-model="fields.mobile" ng-pattern="/[0-9]/" style="width:100px" ng-readonly="edit_area_ReadOnly" required /> &nbsp;
 
