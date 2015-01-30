@@ -73,8 +73,8 @@
     <h3 style="">编辑预约信息</h3>
     预约日期：<input type="text"   ng-model="show_date"  readonly style="width:150px" />
     <br/>
-    医师姓名：<input type="radio" name="doctor_name" ng-model="fields.doctor_name" value="张医生">  张医生
-    <input type="radio" name="doctor_name" ng-model="fields.doctor_name" value="马医生">  马医生
+    医师姓名：<input type="radio" name="doctor_name" ng-model="fields.doctor_name" value="张耀">  张耀
+    <input type="radio" name="doctor_name" ng-model="fields.doctor_name" value="马永泽">  马永泽
     <br/>
     病历号:     <input  type="text" id="id_1"  ng-model="fields.patient_no"  style="width:80px" ng-readonly="true" /> 
     <br/>
@@ -313,9 +313,9 @@
       $scope.goEdit = function( index ) {
         $scope.fields = _.clone($scope.datas.bookinglist[index]);
         if( ! $scope.fields.doctor_name ){
-          $scope.fields.doctor_name = "张医生";
+          $scope.fields.doctor_name = "张耀";
         }else if( $scope.fields.doctor_name === "" ){
-          $scope.fields.doctor_name = "张医生";
+          $scope.fields.doctor_name = "张耀";
         }
 
         $scope.show_date = getYMD($scope.selected_date);
@@ -356,7 +356,7 @@
         postData = $scope.datas;
         console.log($scope.datas);
         var config = {}; 
-        $http.post('http://localhost:8080/saveBooking',  postData)
+        $http.post('http://192.168.1.2:8080/saveBooking',  postData)
         .success(function(data, status, headers, config) {  
           console.log("upload successful. " + data);
         })
