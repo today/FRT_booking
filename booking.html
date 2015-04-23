@@ -39,10 +39,10 @@
         <th style="width:80px;">预约<br>编号</th>
         <th style="width:180px;">门诊号</th>
         <th style="width:80px;">病历号</th>
-        <th style="width:160px;">姓名</th>
+        <th style="width:80px;">姓名</th>
         <th style="width:60px;"></th>
         <th style="width:100px;">联系电话</th>
-        <th style="width:160px;">医师</th>
+        <th style="width:80px;">医师</th>
         <th style="width:150px;">患者备注</th>  
         <th style="width:150px;">预约备注</th>
         <th style="width:40px;"></th>
@@ -159,9 +159,6 @@
     //$scope.show_color[34] = {'background-color':'#FE8'};
     
 
-    
-    
-
     var objDate = new Date(); 
     //$scope.fields.treat_date = objDate;
     // 日期加一天，预约一般都是预约明天的。
@@ -253,16 +250,16 @@
 
     
     $scope.goFill = function( patientNo ) {
-      console.log(patientNo);
+      //console.log(patientNo);
       var tempObj = _.findWhere($scope.allCustomer, {"patient_no": patientNo});
-      console.log(tempObj);
+      //console.log(tempObj);
       if(tempObj){
         // 设置值到输入框
         $scope.fields.patient_no = tempObj.patient_no;
         $scope.fields.name = tempObj.patient_name;
         $scope.fields.mobile = tempObj.mobile;
         $scope.fields.sex = tempObj.sex;
-        $scope.fields.age = tempObj.age;
+        $scope.fields.age = parseInt(tempObj.age);
         $scope.fields.remark = tempObj.remark;
         
         // 输入框变成  Readonly
