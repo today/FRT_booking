@@ -80,7 +80,7 @@
     <br/>
     姓名:     <input  type="text" id="id_2"  ng-model="fields.name" style="width:60px" required ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
     性别:     <input  type="text" id="id_3"  ng-model="fields.sex" style="width:25px" ng-readonly="edit_area_ReadOnly" required/> &nbsp;&nbsp;&nbsp;
-    年龄:     <input  type="text" id="id_4"  ng-model="fields.age" style="width:40px" ng-readonly="edit_area_ReadOnly" ng-pattern="/[0-9.]/" required/> &nbsp;&nbsp;&nbsp;
+    年龄:     <input  type="number" id="id_4"  ng-model="fields.age" style="width:40px" ng-readonly="edit_area_ReadOnly" ng-pattern="/[0-9.]/" required/> &nbsp;&nbsp;&nbsp;
     <br/>
     电话：<input type="tel" id="id_5" ng-model="fields.mobile" ng-pattern="/[0-9]/" style="width:100px" ng-readonly="edit_area_ReadOnly" required /> &nbsp;
 
@@ -133,7 +133,7 @@
       $scope.fields.patient_no = "";
       $scope.fields.name = "";
       $scope.fields.mobile = "";
-      $scope.fields.age = "";
+      $scope.fields.age = "0";
       $scope.fields.sex = "";
       $scope.fields.comment = "";
       $scope.fields.remark = "";
@@ -187,6 +187,10 @@
       // 检查必选项，如果为空，不予保存
       if(isblank($scope.fields.name) || isblank($scope.fields.patient_no)){
         alert("病历号和姓名不能为空。");
+        return false;
+      }
+      else if(isNaN($scope.fields.age)){
+        alert("年龄请输入整数数字，不要包含文字。");
         return false;
       }
 
