@@ -36,12 +36,13 @@
     <br/><br/>
     <table  style="" >
       <tr>
-        <th style="width:80px;">预约<br>编号</th>
-        <th style="width:180px;">门诊号</th>
+        <th style="width:50px;">预约<br>编号</th>
+        <th style="width:140px;">门诊号</th>
         <th style="width:80px;">病历号</th>
         <th style="width:80px;">姓名</th>
-        <th style="width:60px;"></th>
+        <th style="width:40px;"></th>
         <th style="width:100px;">联系电话</th>
+        <th style="width:40px;"></th>
         <th style="width:80px;">医师</th>
         <th style="width:150px;">患者备注</th>  
         <th style="width:150px;">预约备注</th>
@@ -53,12 +54,13 @@
         <td>{{obj.case_no}}</td>
         <td>{{obj.patient_no}}</td>
         <td>{{obj.name}}</td>
-        <td><input type="button" id="prt_{{obj.index}}" ng-click="goPrint( obj )"  value=" 打印 ">  </td>
+        <td><input type="button" id="prt_{{obj.index}}" ng-click="goPrint( obj )"  value="打印">  </td>
         <td>{{obj.mobile}}</td>
+        <td><input type="button" ng-click="goSms(obj)"  value="发短信">  </td>
         <td>{{obj.doctor_name}}</td>
         <td>{{obj.remark}}</td>
         <td>{{obj.comment}}</td>
-        <td><input type="button" ng-click="goEdit( $index )" ng-hide="datas.isUpload" value=" 修改 ">  </td>
+        <td><input type="button" ng-click="goEdit( $index )" ng-hide="datas.isUpload" value="修改">  </td>
         
       </tr>
     </table>
@@ -138,293 +140,329 @@
       $scope.fields.comment = "";
       $scope.fields.remark = "";
 
-
-
-
       $scope.edit_area = false;
-    $scope.edit_area_ReadOnly = true;   // 这个flag同时用来Readonly和在保存时判断是否需要保存到 new_custom.json 中。
-    $scope.show_date = '';
+      $scope.edit_area_ReadOnly = true;   // 这个flag同时用来Readonly和在保存时判断是否需要保存到 new_custom.json 中。
+      $scope.show_date = '';
 
-    $scope.show_color = [];   // 用来设置特定行的颜色
-    $scope.show_color[1] = {'background-color':'#FE8'};
-    $scope.show_color[4] = {'background-color':'#FE8'};
-    $scope.show_color[10] = {'background-color':'#FE8'};
-    //$scope.show_color[11] = {'background-color':'#FE8'};
-    $scope.show_color[14] = {'background-color':'#FE8'};
-    $scope.show_color[17] = {'background-color':'#FE8'};
-    $scope.show_color[18] = {'background-color':'#FE8'};
-    //$scope.show_color[23] = {'background-color':'#FE8'};
-    //$scope.show_color[24] = {'background-color':'#FE8'};
-    $scope.show_color[25] = {'background-color':'#FE8'};
-    //$scope.show_color[34] = {'background-color':'#FE8'};
-    
-
-    var objDate = new Date(); 
-    //$scope.fields.treat_date = objDate;
-    // 日期加一天，预约一般都是预约明天的。
-    $scope.selected_date = new Date(objDate.valueOf() + 1 * 24 * 3660 * 1000);
-
-    $scope.loadBooking = function() {
-      $scope.datas = getBooking($scope.selected_date);
-    };
-
-    $scope.getAllCustom = function(){
-      var  oldCustom = readFileToJson("./data/allCustomer.json");
-      // console.log(oldCustom);
-      var  newCustom = readFileToJson("./data/new_custom.json");
-      // console.log(newCustom);
-      return _.union(oldCustom, newCustom);
-    };
-
-    // 读入所有Customer 信息
-    $scope.allCustomer = $scope.getAllCustom();
-    
-    $scope.saveBooking = function() {
-
-      // 检查必选项，如果为空，不予保存
-      if(isblank($scope.fields.name) || isblank($scope.fields.patient_no)){
-        alert("病历号和姓名不能为空。");
-        return false;
-      }
-      else if(isNaN($scope.fields.age)){
-        alert("年龄请输入整数数字，不要包含文字。");
-        return false;
-      }
-
-      $scope.datas.bookinglist[$scope.fields.index-1] = $scope.fields;
-      var aStr = JSON.stringify($scope.datas);
-      // console.log( "$scope.datas = ###" + aStr + "###" );
-      // Write a file:
-      fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
-      //confirm("保存成功" );
-
-      // 如果是新来的病人，或者信息有修改，保存内容到  new_custom.json 文件中。
-      if( $scope.edit_area_ReadOnly === false ){
-        $scope.edit_area_ReadOnly = true;
-        var tempCustom = {};
-        tempCustom.patient_no = $scope.fields.patient_no;
-        tempCustom.patient_name = $scope.fields.name;
-        tempCustom.mobile = $scope.fields.mobile;
-        tempCustom.sex = $scope.fields.sex;
-        tempCustom.age = $scope.fields.age;
-        tempCustom.remark = $scope.fields.remark;
-
-        // 检查 new_custom.json 是否存在。
-        var filename = 'data/new_custom.json';
-        if( ! fs.existsSync( filename ) ){
-          console.log( "The file " + filename + " not exists." );
-          fs.writeFileSync(filename,"[]");
-        }
-        appendToJsonFile( "data/new_custom.json", tempCustom );
-
-        // 并且重新读入全部患者信息。
-        $scope.allCustomer = $scope.getAllCustom();
-      }
-
-      $scope.flag_msg_show = true;
-      setTimeout(function(){
-        $scope.flag_msg_show = false;
-        $scope.$apply();
-      },1000);
-
-      //$scope.loadBooking();
-      $scope.fields = {};
-      $scope.edit_area = false;
-    };
-
-    
-    $scope.hideEdit = function() {
-      $scope.fields = {};
-      $scope.edit_area = false;
-    };
-
-    $scope.goPrint = function(obj){
-
-      obj.comment = "已经打印  " + obj.comment;
-      var aStr = JSON.stringify($scope.datas);
-      fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
-
-      window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no+ ","+ obj.doctor_name,
-        "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
-    };
-
-    
-    $scope.goFill = function( patientNo ) {
-      //console.log(patientNo);
-      var tempObj = _.findWhere($scope.allCustomer, {"patient_no": patientNo});
-      //console.log(tempObj);
-      if(tempObj){
-        // 设置值到输入框
-        $scope.fields.patient_no = tempObj.patient_no;
-        $scope.fields.name = tempObj.patient_name;
-        $scope.fields.mobile = tempObj.mobile;
-        $scope.fields.sex = tempObj.sex;
-        $scope.fields.age = parseInt(tempObj.age);
-        $scope.fields.remark = tempObj.remark;
-        
-        // 输入框变成  Readonly
-        $scope.edit_area_ReadOnly = true;
-      }
-    };
-
-    var getPatientNo = function(obj){
-      var iRet = 0;
-      if(obj.patient_no){
-        var tempVal = parseInt(obj.patient_no);
-        if( ! isNaN(tempVal) ){
-          iRet = parseInt(obj.patient_no);
-        }
-      }
-      return iRet ;
-    };
-
-    var getNewPatientNo = function(){
-
-      var maxObj_A = _.max( $scope.allCustomer, getPatientNo);
+      $scope.show_color = [];   // 用来设置特定行的颜色
+      $scope.show_color[1] = {'background-color':'#FE8'};
+      $scope.show_color[4] = {'background-color':'#FE8'};
+      $scope.show_color[10] = {'background-color':'#FE8'};
+      //$scope.show_color[11] = {'background-color':'#FE8'};
+      $scope.show_color[14] = {'background-color':'#FE8'};
+      $scope.show_color[17] = {'background-color':'#FE8'};
+      $scope.show_color[18] = {'background-color':'#FE8'};
+      //$scope.show_color[23] = {'background-color':'#FE8'};
+      //$scope.show_color[24] = {'background-color':'#FE8'};
+      $scope.show_color[25] = {'background-color':'#FE8'};
+      //$scope.show_color[34] = {'background-color':'#FE8'};
       
-      if(maxObj_A){
-        maxNo_A = getPatientNo(maxObj_A);
-      }else{
-        alert("程序出错，请联系开发人员。");
-      }
 
-      return (maxNo_A+1); 
-    };
-    
-    $scope.goNewPatient = function() {
-        // 输入框变成 可编辑状态
-        // 并且标识出这是一个新患者 或者更改了老患者的信息
-        $scope.edit_area_ReadOnly = false;
-        
-        if( $scope.fields.patient_no === "0" ){
-          // 设置更改标记为  insert
-          $scope.fields.db_flag = "insert";
-          // 生成病历号
-          $scope.fields.patient_no = getNewPatientNo();
-        }else{
-          // 设置更改标记为  update
-          $scope.fields.db_flag = "update";
-        }      
+      var objDate = new Date(); 
+      //$scope.fields.treat_date = objDate;
+      // 日期加一天，预约一般都是预约明天的。
+      $scope.selected_date = new Date(objDate.valueOf() + 1 * 24 * 3660 * 1000);
+
+      $scope.loadBooking = function() {
+        $scope.datas = getBooking($scope.selected_date);
       };
 
-      $scope.goEditPatient = function() {
-        $scope.goNewPatient();
+      $scope.getAllCustom = function(){
+        var  oldCustom = readFileToJson("./data/allCustomer.json");
+        // console.log(oldCustom);
+        var  newCustom = readFileToJson("./data/new_custom.json");
+        // console.log(newCustom);
+        return _.union(oldCustom, newCustom);
       };
 
-      $scope.goEdit = function( index ) {
-        $scope.fields = _.clone($scope.datas.bookinglist[index]);
-        if( ! $scope.fields.doctor_name ){
-          $scope.fields.doctor_name = "张耀";
-        }else if( $scope.fields.doctor_name === "" ){
-          $scope.fields.doctor_name = "张耀";
+      // 读入所有Customer 信息
+      $scope.allCustomer = $scope.getAllCustom();
+      
+      $scope.saveBooking = function() {
+
+        // 检查必选项，如果为空，不予保存
+        if(isblank($scope.fields.name) || isblank($scope.fields.patient_no)){
+          alert("病历号和姓名不能为空。");
+          return false;
+        }
+        else if(isNaN($scope.fields.age)){
+          alert("年龄请输入整数数字，不要包含文字。");
+          return false;
         }
 
-        $scope.show_date = getYMD($scope.selected_date);
-        $scope.edit_area = true;
-        $scope.edit_area_ReadOnly = true;
+        $scope.datas.bookinglist[$scope.fields.index-1] = $scope.fields;
+        var aStr = JSON.stringify($scope.datas);
+        // console.log( "$scope.datas = ###" + aStr + "###" );
+        // Write a file:
+        fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
+        //confirm("保存成功" );
 
-        //alert(document.getElementById("patient_no"));
+        // 如果是新来的病人，或者信息有修改，保存内容到  new_custom.json 文件中。
+        if( $scope.edit_area_ReadOnly === false ){
+          $scope.edit_area_ReadOnly = true;
+          var tempCustom = {};
+          tempCustom.patient_no = $scope.fields.patient_no;
+          tempCustom.patient_name = $scope.fields.name;
+          tempCustom.mobile = $scope.fields.mobile;
+          tempCustom.sex = $scope.fields.sex;
+          tempCustom.age = $scope.fields.age;
+          tempCustom.remark = $scope.fields.remark;
+
+          // 检查 new_custom.json 是否存在。
+          var filename = 'data/new_custom.json';
+          if( ! fs.existsSync( filename ) ){
+            console.log( "The file " + filename + " not exists." );
+            fs.writeFileSync(filename,"[]");
+          }
+          appendToJsonFile( "data/new_custom.json", tempCustom );
+
+          // 并且重新读入全部患者信息。
+          $scope.allCustomer = $scope.getAllCustom();
+        }
+
+        $scope.flag_msg_show = true;
         setTimeout(function(){
-          var inputObj = document.getElementById("id_a");
-          inputObj.focus();
-          inputObj.select();
-        },250);
-      };
+          $scope.flag_msg_show = false;
+          $scope.$apply();
+        },1000);
 
-    $scope.addLine = function(linenum) {
-      var startIndex = $scope.datas.bookinglist.length;
-
-      for( i=0; i<linenum; i++ ){
-        var obj = makeBlankLine($scope.selected_date);
-        obj.index = i+startIndex+1;
-        obj.case_no = getYMD( $scope.selected_date ) + "_" + (startIndex + i + 1);
-        $scope.datas.bookinglist.push(obj);
-      }
-    };
-
-    $scope.loadBooking();
-
-      // 生成病历号和门诊号。
-      $scope.make_no = function() {
-        //循环
-        //
-        
+        //$scope.loadBooking();
+        $scope.fields = {};
+        $scope.edit_area = false;
       };
 
       
-      // 上传预约数据到Server
-      $scope.upload_Booking = function() {
-        postData = $scope.datas;
-        console.log($scope.datas);
-        var config = {}; 
-        $http.post('http://192.168.1.2:8080/saveBooking',  postData)
-        .success(function(data, status, headers, config) {  
-          console.log("upload successful. " + data);
-        })
-        .error(function(data, status, headers, config) {  
-          console.log("upload error.");  
-        });  
+      $scope.hideEdit = function() {
+        $scope.fields = {};
+        $scope.edit_area = false;
       };
 
-      
-      $scope.testFill = function() {
-        $scope.fields.patient_id =  "00001";
-        $scope.fields.case_id =  "00002";
-        $scope.fields.mobile =  "13991300001";
-        $scope.fields.name =  "李四四";
-        $scope.fields.comment =  "经常来下午来。";
+      $scope.goPrint = function(obj){
 
+        obj.comment = "已经打印  " + obj.comment;
+        var aStr = JSON.stringify($scope.datas);
+        fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
+
+        window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no+ ","+ obj.doctor_name,
+          "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
       };
-    }
 
-    debug_flag = 0;
-    document.onkeydown = function(event) { 
-      keynum = event.which;
-
-    // 这一段是用来显示隐藏debug区的。
-    if (keynum==192){
-
-      if( debug_flag === 0 ){
-        debug_flag++;
-      }else if(debug_flag == 1 ){
-        debug_flag++;
-        document.getElementById('debug_area').style.display="";//显示
-        
-      }
-      else if(debug_flag == 2 ){
-        debug_flag = 0;
-        document.getElementById('debug_area').style.display="none";//隐藏
-      }
-
-    }
-
-    //alert(keynum);
-    if (keynum==13){
-
-      var temp_id = event.srcElement.id;
-      if( temp_id ){
-        var str_id = temp_id.substring(3); 
-
-
-        var i_id = 0;
-        try{
-          i_id = parseInt(str_id);
-        }catch(error){
-          console.log("error:" , error );
-          console.log("id:" , str_id );
+      $scope.goSms = function(obj){
+        var mobile = obj.mobile;
+        if(isblank(mobile)){
+          alert("手机号为空，无法发送短信。");
         }
-        var obj = document.getElementById('id_' + (i_id + 1) );
-        if( obj ){
-          obj.focus();
+        else if(isMobile(mobile) === false ){
+          alert("手机号不正确，无法发送短信。");
         }
         else{
-          obj = document.getElementById( 'id_1' );
-          obj.focus();
+          var content = obj.name + "您好，您已经预约了" + obj.treat_date +
+                        "日的门诊，您的预约编号是：" + obj.index + "。";
+          //console.log(content);
+          var flag = confirm( "即将发送短信：\n【" + content + "】\n到 " + mobile + " ，请确认是否发送？");
+          console.log(flag);
+          if( flag ){
+            var url = "http://m.5c.com.cn/api/send/index.php?";
+            var apikey = "apikey=5660a6d52ee645c863cd1cb4f1de1c71";
+            var username = "&username=furuntang";
+            var pwd = "&password=g9csrqmwR";
+            var encode = "&encode=1";
+            var mobiles = "&mobile=" + mobile;
+            content = "&content=" + encodeURIComponent( content, "utf-8");
+
+            var full_url = url + apikey + username + pwd + encode + mobiles + content ;
+            console.log(full_url);
+            $http.get(full_url).
+                  success(function(data, status, headers, config) {
+                    alert("短信发送成功。");
+                  }).
+                  error(function(data, status, headers, config) {
+                    alert("发送失败。请重新发送或者联系系统管理员。");
+                  });
+          }
         }
+
+
+        
+      };
+
+      
+      $scope.goFill = function( patientNo ) {
+        //console.log(patientNo);
+        var tempObj = _.findWhere($scope.allCustomer, {"patient_no": patientNo});
+        //console.log(tempObj);
+        if(tempObj){
+          // 设置值到输入框
+          $scope.fields.patient_no = tempObj.patient_no;
+          $scope.fields.name = tempObj.patient_name;
+          $scope.fields.mobile = tempObj.mobile;
+          $scope.fields.sex = tempObj.sex;
+          $scope.fields.age = parseInt(tempObj.age);
+          $scope.fields.remark = tempObj.remark;
+          
+          // 输入框变成  Readonly
+          $scope.edit_area_ReadOnly = true;
+        }
+      };
+
+      var getPatientNo = function(obj){
+        var iRet = 0;
+        if(obj.patient_no){
+          var tempVal = parseInt(obj.patient_no);
+          if( ! isNaN(tempVal) ){
+            iRet = parseInt(obj.patient_no);
+          }
+        }
+        return iRet ;
+      };
+
+      var getNewPatientNo = function(){
+
+        var maxObj_A = _.max( $scope.allCustomer, getPatientNo);
+        
+        if(maxObj_A){
+          maxNo_A = getPatientNo(maxObj_A);
+        }else{
+          alert("程序出错，请联系开发人员。");
+        }
+
+        return (maxNo_A+1); 
+      };
+      
+      $scope.goNewPatient = function() {
+          // 输入框变成 可编辑状态
+          // 并且标识出这是一个新患者 或者更改了老患者的信息
+          $scope.edit_area_ReadOnly = false;
+          
+          if( $scope.fields.patient_no === "0" ){
+            // 设置更改标记为  insert
+            $scope.fields.db_flag = "insert";
+            // 生成病历号
+            $scope.fields.patient_no = getNewPatientNo();
+          }else{
+            // 设置更改标记为  update
+            $scope.fields.db_flag = "update";
+          }      
+        };
+
+        $scope.goEditPatient = function() {
+          $scope.goNewPatient();
+        };
+
+        $scope.goEdit = function( index ) {
+          $scope.fields = _.clone($scope.datas.bookinglist[index]);
+          if( ! $scope.fields.doctor_name ){
+            $scope.fields.doctor_name = "张耀";
+          }else if( $scope.fields.doctor_name === "" ){
+            $scope.fields.doctor_name = "张耀";
+          }
+
+          $scope.show_date = getYMD($scope.selected_date);
+          $scope.edit_area = true;
+          $scope.edit_area_ReadOnly = true;
+
+          //alert(document.getElementById("patient_no"));
+          setTimeout(function(){
+            var inputObj = document.getElementById("id_a");
+            inputObj.focus();
+            inputObj.select();
+          },250);
+        };
+
+      $scope.addLine = function(linenum) {
+        var startIndex = $scope.datas.bookinglist.length;
+
+        for( i=0; i<linenum; i++ ){
+          var obj = makeBlankLine($scope.selected_date);
+          obj.index = i+startIndex+1;
+          obj.case_no = getYMD( $scope.selected_date ) + "_" + (startIndex + i + 1);
+          $scope.datas.bookinglist.push(obj);
+        }
+      };
+
+      $scope.loadBooking();
+
+        // 生成病历号和门诊号。
+        $scope.make_no = function() {
+          //循环
+          //
+          
+        };
+
+        
+        // 上传预约数据到Server
+        $scope.upload_Booking = function() {
+          postData = $scope.datas;
+          console.log($scope.datas);
+          var config = {}; 
+          $http.post('http://192.168.1.2:8080/saveBooking',  postData)
+          .success(function(data, status, headers, config) {  
+            console.log("upload successful. " + data);
+          })
+          .error(function(data, status, headers, config) {  
+            console.log("upload error.");  
+          });  
+        };
+
+        
+        $scope.testFill = function() {
+          $scope.fields.patient_id =  "00001";
+          $scope.fields.case_id =  "00002";
+          $scope.fields.mobile =  "13991300001";
+          $scope.fields.name =  "李四四";
+          $scope.fields.comment =  "经常来下午来。";
+
+        };
       }
-      else{
-        console.log("not input." );
+
+      debug_flag = 0;
+      document.onkeydown = function(event) { 
+        keynum = event.which;
+
+      // 这一段是用来显示隐藏debug区的。
+      if (keynum==192){
+
+        if( debug_flag === 0 ){
+          debug_flag++;
+        }else if(debug_flag == 1 ){
+          debug_flag++;
+          document.getElementById('debug_area').style.display="";//显示
+          
+        }
+        else if(debug_flag == 2 ){
+          debug_flag = 0;
+          document.getElementById('debug_area').style.display="none";//隐藏
+        }
+
       }
+
+      //alert(keynum);
+      if (keynum==13){
+
+        var temp_id = event.srcElement.id;
+        if( temp_id ){
+          var str_id = temp_id.substring(3); 
+
+
+          var i_id = 0;
+          try{
+            i_id = parseInt(str_id);
+          }catch(error){
+            console.log("error:" , error );
+            console.log("id:" , str_id );
+          }
+          var obj = document.getElementById('id_' + (i_id + 1) );
+          if( obj ){
+            obj.focus();
+          }
+          else{
+            obj = document.getElementById( 'id_1' );
+            obj.focus();
+          }
+        }
+        else{
+          console.log("not input." );
+        }
 
     }
   };

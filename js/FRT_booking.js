@@ -18,6 +18,16 @@ function isblank(strA){
 	}
 }
 
+function isMobile(mobileNo){
+	console.log(mobileNo);
+    if((/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(mobileNo))){  
+        return true; 
+    }
+    else{
+    	return false; 
+    }
+}
+
 function getYMD( aDate ){
 	var year = aDate.getFullYear();
 	var month = aDate.getMonth()+1;
