@@ -42,7 +42,7 @@
         <th style="width:80px;">姓名</th>
         <th style="width:40px;"></th>
         <th style="width:100px;">联系电话</th>
-        <th style="width:40px;"></th>
+        <th style="width:80px;"></th>
         <th style="width:80px;">医师</th>
         <th style="width:150px;">患者备注</th>  
         <th style="width:150px;">预约备注</th>
@@ -56,7 +56,7 @@
         <td>{{obj.name}}</td>
         <td><input type="button" id="prt_{{obj.index}}" ng-click="goPrint( obj )"  value="打印">  </td>
         <td>{{obj.mobile}}</td>
-        <td><input type="button" ng-click="goSms(obj)"  value="发短信">  </td>
+        <td>  <input type="button" ng-click="goSms(obj)"  value="发短信"> {{obj.sms_num}} </td>
         <td>{{obj.doctor_name}}</td>
         <td>{{obj.remark}}</td>
         <td>{{obj.comment}}</td>
@@ -139,6 +139,7 @@
       $scope.fields.sex = "";
       $scope.fields.comment = "";
       $scope.fields.remark = "";
+      $scope.fields.sms_num = 0;
 
       $scope.edit_area = false;
       $scope.edit_area_ReadOnly = true;   // 这个flag同时用来Readonly和在保存时判断是否需要保存到 new_custom.json 中。
@@ -178,6 +179,17 @@
       // 读入所有Customer 信息
       $scope.allCustomer = $scope.getAllCustom();
       
+      $scope.saveBookingToFile = function() {
+        // if( ! $scope.fields.hasOwnProperty("sms_num")){
+        //   $scope.fields.sms_num = 0;
+        // }
+        var aStr = JSON.stringify($scope.datas);
+        // console.log( "$scope.datas = ###" + aStr + "###" );
+        // Write a file:
+        fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
+        //confirm("保存成功" );
+      };
+
       $scope.saveBooking = function() {
 
         // 检查必选项，如果为空，不予保存
@@ -190,12 +202,11 @@
           return false;
         }
 
+        // if( ! $scope.fields.hasOwnProperty("sms_num")){
+        //   $scope.fields.sms_num = 0;
+        // }
         $scope.datas.bookinglist[$scope.fields.index-1] = $scope.fields;
-        var aStr = JSON.stringify($scope.datas);
-        // console.log( "$scope.datas = ###" + aStr + "###" );
-        // Write a file:
-        fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
-        //confirm("保存成功" );
+        $scope.saveBookingToFile();
 
         // 如果是新来的病人，或者信息有修改，保存内容到  new_custom.json 文件中。
         if( $scope.edit_area_ReadOnly === false ){
@@ -256,8 +267,10 @@
           alert("手机号不正确，无法发送短信。");
         }
         else{
-          var content = obj.name + "您好，您已经预约了" + obj.treat_date +
-                        "日的门诊，您的预约编号是：" + obj.index + "。";
+          //  感谢您致电福润堂。蒋亚利您好！您的预约号是2015-5-16第2号。我们将为您提供优质的健康服务，地址：西安市丈八西路12号高科尚都（高新三中对面）电话：029-88157775
+
+          var content =  "" + obj.name + "您好，感谢致电福润堂，您的预约号是：" +  obj.treat_date +
+                        "第" + obj.index + "号。我们将为您提供优质的健康服务，地址：西安市丈八西路12号高科尚都（高新三中对面）电话：029-88157775";
           //console.log(content);
           var flag = confirm( "即将发送短信：\n【" + content + "】\n到 " + mobile + " ，请确认是否发送？");
           console.log(flag);
@@ -272,18 +285,23 @@
 
             var full_url = url + apikey + username + pwd + encode + mobiles + content ;
             console.log(full_url);
+
+            if( ! obj.hasOwnProperty("sms_num")){
+              obj.sms_num = 0;
+            }
+            obj.sms_num += 1;
+            $scope.saveBookingToFile();
+
             $http.get(full_url).
                   success(function(data, status, headers, config) {
+
                     alert("短信发送成功。");
                   }).
                   error(function(data, status, headers, config) {
                     alert("发送失败。请重新发送或者联系系统管理员。");
                   });
           }
-        }
-
-
-        
+        }   
       };
 
       

@@ -96,6 +96,7 @@ function makeBlankLine(aDate){
     obj.name =  "";
     obj.comment =  "";
     obj.doctor_name = "";
+    obj.sms_num = 0;
 	return obj;
 }
 
