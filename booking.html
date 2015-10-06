@@ -203,6 +203,7 @@
         }
         else if(isNaN($scope.fields.age)){
           alert("年龄请输入整数数字，不要包含文字。");
+          $scope.fields.age=0;
           return false;
         }
 
@@ -415,14 +416,20 @@
         // 上传预约数据到Server
         $scope.upload_Booking = function() {
           postData = $scope.datas;
-          console.log($scope.datas);
+          //console.log($scope.datas);
           var config = {}; 
           $http.post('http://192.168.1.2:8080/saveBooking',  postData)
-          .success(function(data, status, headers, config) {  
+          .success(function(data, status, headers, config) {
+            //console.log(data);  
             console.log("upload successful. " + data);
           })
-          .error(function(data, status, headers, config) {  
+          .error(function(data, status, headers, config) { 
+            console.log(data);
+            console.log(status);
+            console.log(headers);
+            console.log(config);
             console.log("upload error.");  
+              
           });  
         };
 
