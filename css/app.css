@@ -33,6 +33,10 @@ hr {
   border-bottom: 1px solid gray;
 }
 
+.msg{
+  color:blue;
+}
+
 #auto_hide_msg{
   padding:10px;
   padding-top: 50px;

@@ -47,23 +47,9 @@ function getYMD_no_dash( aDate ){
 }
 
 function getBookingFilename( aDate ){
-	return 'data/booking_' + getYMD(aDate) + '.json' ;
+	return 'booking_' + getYMD(aDate) + '.json' ;
 }
 
-// 读入指定日期的预约登记表
-function getBooking( aDate ){
-	var aJson = makeBlankBooking( aDate, 40 );
-	var strFilename = getBookingFilename(aDate) ;
-
-	if(fs.existsSync( strFilename) ){
-		var strBookingList = fs.readFileSync(strFilename);
-	    
-		//console.log("getBooking(): " + strBookingList);
-
-	    aJson = JSON.parse(strBookingList);
-	}
-	return aJson;
-} 
 
 // 生成空白的预约登记表
 function makeBlankBooking( aDate, num ){

@@ -24,7 +24,7 @@
     
   </span>
   <h1 style="">
-    福润堂 预约 
+    福润堂 预约 <div class="msg">{{datas.msg }}</div>
     
   </h1> 
   <div style="float:left;width:750px;">
@@ -95,11 +95,9 @@
     <br>    
     <input type="button" value=" 保存 "  ng-click="saveBooking()"  /> 
     <input type="button" value="初次就诊"   ng-click="goNewPatient()"  /> 
-    
     <!--
     <input type="button" value="修改信息 "  ng-click="goEditPatient()"   /> 
     -->
-
     <input type="button" value=" 取消 "  ng-click="hideEdit()" style="float:right;" />
     <br><br>
 
@@ -125,7 +123,7 @@
   <h1 id="auto_hide_msg" ng-show="flag_msg_show" style="text-align:center;padding-top: 50px;" > 保 存 成 功 </h1>
   
   <script type="text/javascript">
-
+    var serverUrl = "http://192.168.1.2:8080";
     var inputApp = angular.module('inputApp', []);
 
     function Ctrl($scope, $http) {
@@ -169,10 +167,28 @@
       $scope.selected_date = new Date(objDate.valueOf() + 1 * 24 * 3660 * 1000);
 
       $scope.loadBooking = function() {
-        $scope.datas = getBooking($scope.selected_date);
+        var aJson = "";  
+        //
+        var strFilename = getBookingFilename($scope.selected_date) ;
+        //console.log(strFilename);
+
+        // 从服务器取预约数据
+        $http.get( serverUrl + '/getBooking?filename=' + strFilename)
+            .success(function(data) {
+              $scope.datas = data;
+            })
+            .error(function(data, status, headers, config) {
+              console.log(data);
+              var temp_err = '{"flag":"error","error_no":"20001","msg":"Front end Error."}';
+              $scope.datas = temp_err;
+            });
+        //$scope.$apply();
+        //console.log("log 001:" + $scope.datas.msg);
       };
 
       $scope.getAllCustom = function(){
+        
+        
         var  oldCustom = readFileToJson("./data/allCustomer.json");
         // console.log(oldCustom);
         var  newCustom = readFileToJson("./data/new_custom.json");
@@ -182,17 +198,6 @@
 
       // 读入所有Customer 信息
       $scope.allCustomer = $scope.getAllCustom();
-      
-      $scope.saveBookingToFile = function() {
-        // if( ! $scope.fields.hasOwnProperty("sms_num")){
-        //   $scope.fields.sms_num = 0;
-        // }
-        var aStr = JSON.stringify($scope.datas);
-        // console.log( "$scope.datas = ###" + aStr + "###" );
-        // Write a file:
-        fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
-        //confirm("保存成功" );
-      };
 
       $scope.saveBooking = function() {
 
@@ -211,7 +216,23 @@
         //   $scope.fields.sms_num = 0;
         // }
         $scope.datas.bookinglist[$scope.fields.index-1] = $scope.fields;
-        $scope.saveBookingToFile();
+        
+        postData = $scope.datas;
+        //console.log($scope.datas);
+        var config = {}; 
+        $http.post( serverUrl + '/saveBooking',  postData)
+          .success(function(data, status, headers, config) {
+            //console.log(data);  
+            console.log("upload successful. " + data);
+          })
+          .error(function(data, status, headers, config) { 
+            console.log(data);
+            console.log(status);
+            console.log(headers);
+            console.log(config);
+            console.log("upload error.");  
+              
+          });  
 
         // 如果是新来的病人，或者信息有修改，保存内容到  new_custom.json 文件中。
         if( $scope.edit_area_ReadOnly === false ){
@@ -405,33 +426,10 @@
 
       $scope.loadBooking();
 
-        // 生成病历号和门诊号。
-        $scope.make_no = function() {
-          //循环
-          //
-          
-        };
+        
 
         
-        // 上传预约数据到Server
-        $scope.upload_Booking = function() {
-          postData = $scope.datas;
-          //console.log($scope.datas);
-          var config = {}; 
-          $http.post('http://192.168.1.2:8080/saveBooking',  postData)
-          .success(function(data, status, headers, config) {
-            //console.log(data);  
-            console.log("upload successful. " + data);
-          })
-          .error(function(data, status, headers, config) { 
-            console.log(data);
-            console.log(status);
-            console.log(headers);
-            console.log(config);
-            console.log("upload error.");  
-              
-          });  
-        };
+        
 
         
         $scope.testFill = function() {
