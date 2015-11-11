@@ -187,17 +187,25 @@
       };
 
       $scope.getAllCustom = function(){
-        
-        
-        var  oldCustom = readFileToJson("./data/allCustomer.json");
-        // console.log(oldCustom);
-        var  newCustom = readFileToJson("./data/new_custom.json");
-        // console.log(newCustom);
-        return _.union(oldCustom, newCustom);
+        // 从服务器取所有Customer 信息
+        $http.get( serverUrl + '/getCustomer')
+            .success(function(data) {
+              $scope.allCustomer = data;
+            })
+            .error(function(data, status, headers, config) {
+              console.log(data);
+              var temp_err = '{"flag":"error","error_no":"20001","msg":"Front end Error."}';
+              $scope.datas = temp_err;
+            });
+        // var  oldCustom = readFileToJson("./data/allCustomer.json");
+        // // console.log(oldCustom);
+        // var  newCustom = readFileToJson("./data/new_custom.json");
+        // // console.log(newCustom);
+        // return _.union(oldCustom, newCustom);
       };
 
-      // 读入所有Customer 信息
-      $scope.allCustomer = $scope.getAllCustom();
+      
+      $scope.getAllCustom();
 
       $scope.saveBooking = function() {
 
@@ -254,7 +262,7 @@
           appendToJsonFile( "data/new_custom.json", tempCustom );
 
           // 并且重新读入全部患者信息。
-          $scope.allCustomer = $scope.getAllCustom();
+          $scope.getAllCustom();
         }
 
         $scope.flag_msg_show = true;
@@ -425,12 +433,6 @@
       };
 
       $scope.loadBooking();
-
-        
-
-        
-        
-
         
         $scope.testFill = function() {
           $scope.fields.patient_id =  "00001";
