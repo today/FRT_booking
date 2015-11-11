@@ -253,6 +253,22 @@
           tempCustom.age = $scope.fields.age;
           tempCustom.remark = $scope.fields.remark;
 
+          
+          var config = {}; 
+          $http.post( serverUrl + '/newCustomer',  tempCustom)
+            .success(function(data, status, headers, config) {
+              //console.log(data);  
+              console.log("new Customer save successful. " + data);
+            })
+            .error(function(data, status, headers, config) { 
+              console.log(data);
+              console.log(status);
+              console.log(headers);
+              console.log(config);
+              console.log("upload error.");  
+            });  
+
+
           // 检查 new_custom.json 是否存在。
           var filename = 'data/new_custom.json';
           if( ! fs.existsSync( filename ) ){
@@ -262,7 +278,7 @@
           appendToJsonFile( "data/new_custom.json", tempCustom );
 
           // 并且重新读入全部患者信息。
-          $scope.getAllCustom();
+          // $scope.getAllCustom();
         }
 
         $scope.flag_msg_show = true;
