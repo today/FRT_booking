@@ -175,7 +175,12 @@
         // 从服务器取预约数据
         $http.get( serverUrl + '/getBooking?filename=' + strFilename)
             .success(function(data) {
-              $scope.datas = data;
+              if('10001' === data.error_no){
+                $scope.datas = makeBlankBooking($scope.selected_date, 40);
+              }else{
+                $scope.datas = data;
+              }
+              
             })
             .error(function(data, status, headers, config) {
               console.log(data);
@@ -197,11 +202,7 @@
               var temp_err = '{"flag":"error","error_no":"20001","msg":"Front end Error."}';
               $scope.datas = temp_err;
             });
-        // var  oldCustom = readFileToJson("./data/allCustomer.json");
-        // // console.log(oldCustom);
-        // var  newCustom = readFileToJson("./data/new_custom.json");
-        // // console.log(newCustom);
-        // return _.union(oldCustom, newCustom);
+        
       };
 
       
@@ -230,8 +231,8 @@
         var config = {}; 
         $http.post( serverUrl + '/saveBooking',  postData)
           .success(function(data, status, headers, config) {
-            //console.log(data);  
-            console.log("upload successful. " + data);
+            console.log("upload successful. ");  
+            //console.log("upload successful. " + data);
           })
           .error(function(data, status, headers, config) { 
             console.log(data);
@@ -242,43 +243,33 @@
               
           });  
 
-        // 如果是新来的病人，或者信息有修改，保存内容到  new_custom.json 文件中。
+        // 如果是新来的病人，或者信息有修改，保存。
+        console.log("$scope.edit_area_ReadOnly=" + $scope.edit_area_ReadOnly);
         if( $scope.edit_area_ReadOnly === false ){
-          $scope.edit_area_ReadOnly = true;
-          var tempCustom = {};
-          tempCustom.patient_no = $scope.fields.patient_no;
-          tempCustom.patient_name = $scope.fields.name;
-          tempCustom.mobile = $scope.fields.mobile;
-          tempCustom.sex = $scope.fields.sex;
-          tempCustom.age = $scope.fields.age;
-          tempCustom.remark = $scope.fields.remark;
+            // 保存新用户的信息
+            postData = {};
+            postData.patient_no = $scope.fields.patient_no;
+            postData.patient_name = $scope.fields.name;
+            postData.age = $scope.fields.age;
+            postData.sex = $scope.fields.sex;
+            postData.mobile = $scope.fields.mobile;
+            postData.remark = $scope.fields.remark;
+            console.log(postData);
 
-          
-          var config = {}; 
-          $http.post( serverUrl + '/newCustomer',  tempCustom)
-            .success(function(data, status, headers, config) {
-              //console.log(data);  
-              console.log("new Customer save successful. " + data);
-            })
-            .error(function(data, status, headers, config) { 
-              console.log(data);
-              console.log(status);
-              console.log(headers);
-              console.log(config);
-              console.log("upload error.");  
-            });  
-
-
-          // 检查 new_custom.json 是否存在。
-          var filename = 'data/new_custom.json';
-          if( ! fs.existsSync( filename ) ){
-            console.log( "The file " + filename + " not exists." );
-            fs.writeFileSync(filename,"[]");
-          }
-          appendToJsonFile( "data/new_custom.json", tempCustom );
-
-          // 并且重新读入全部患者信息。
-          // $scope.getAllCustom();
+            $http.post( serverUrl + '/newCustomer',  postData)
+              .success(function(data, status, headers, config) {
+                
+                $scope.allCustomer = data; 
+                console.log("new custom save successful. ");
+              })
+              .error(function(data, status, headers, config) { 
+                console.log(data);
+                console.log(status);
+                console.log(headers);
+                console.log(config);
+                console.log("upload error.");  
+                  
+              });
         }
 
         $scope.flag_msg_show = true;
@@ -301,8 +292,23 @@
       $scope.goPrint = function(obj){
 
         obj.comment = "已经打印  " + obj.comment;
-        var aStr = JSON.stringify($scope.datas);
-        fs.writeFileSync( getBookingFilename($scope.selected_date), aStr);
+        
+        // 保存状态到服务器
+        postData = $scope.datas;
+        var config = {}; 
+        $http.post( serverUrl + '/saveBooking',  postData)
+          .success(function(data, status, headers, config) {
+            console.log("upload successful. ");  
+            //console.log("upload successful. " + data);
+          })
+          .error(function(data, status, headers, config) { 
+            console.log(data);
+            console.log(status);
+            console.log(headers);
+            console.log(config);
+            console.log("upload error.");  
+              
+          });  
 
         window.open("print.html?" + obj.index + ","+ obj.name + ","+ obj.case_no+ ","+ obj.doctor_name,
           "Print", "width=200,height=320,location=no,directories=no,menubar=no,resizable=no,toolbar=no");
@@ -410,7 +416,7 @@
           }else{
             // 设置更改标记为  update
             $scope.fields.db_flag = "update";
-          }      
+          } 
         };
 
         $scope.goEditPatient = function() {
